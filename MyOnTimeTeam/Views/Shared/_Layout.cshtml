@@ -11,8 +11,9 @@
 		@Styles.Render("~/Content/bootstrap")
 		@Scripts.Render("~/bundles/modernizr")
 		@Scripts.Render("~/bundles/jquery")
-		@Scripts.Render("~/bundles/myOnTimeTeam")
+		@Scripts.Render("~/bundles/knockout")
 		@Scripts.Render("~/bundles/bootstrap")
+		@Scripts.Render("~/bundles/myOnTimeTeam")
 	</head>
 	<body>
 		<header>
@@ -27,19 +28,19 @@
 							<script>
 								window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
 								window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
-								//window.myOnTimeTeam.getCurrentUserData().done(function (response) {
-								//	var data = response.data;
-								//	$("#userTag").text(data.first_name + " " + data.last_name);
-								//});
+								window.myOnTimeTeam.getCurrentUserData().done(function (response) {
+									var data = response.data;
+									$("#userImage").attr("src", data.image_url);
+									$("#userName").text(data.first_name + " " + data.last_name);
+								});
 
 								window.myOnTimeTeam.refreshData();
 							</script>
 							<text>
 								<div class="btn-group">
 									<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-										@*<img id="userTag" alt="" class="pull-left" />*@
-										<span id="userTag"></span>
-										<span class="caret"></span>
+										<img id="userImage" class="pull-left" height="25" width="25"/>
+										<span id="userName"></span>
 									</a>
 									<ul class="dropdown-menu">
 										<li class="dropdown-submenu">
@@ -54,7 +55,7 @@
 										</li>
 										<li class="divider"></li>
 										<li>
-											<a>Log Out</a>
+											<a id="logoutButton">Log Out</a>
 										</li>
 									</ul>
 								</div>
@@ -75,6 +76,14 @@
 			if ($('#loginButton')) {
 				$('#loginButton').click(function () {
 					$.modalPopup('accounts/logon');
+				});
+			}
+			if ($('#logoutButton')) {
+				$('#logoutButton').click(function () {
+					document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+					document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+
+					document.location = "";
 				});
 			}
 		</script>

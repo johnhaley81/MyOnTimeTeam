@@ -95,7 +95,7 @@ h5, h6 {
 ----------------------------------------------------------*/
 .content-wrapper {
     margin: 0 auto;
-    max-width: 960px;
+    max-width: 1400px;
 }
 
 #body {
@@ -754,3 +754,66 @@ tr.pager td {
             margin: 0;
         }
 }
+
+
+/* responsive grid */
+.responsive-grid {
+	width: 100%;
+}
+
+.responsive-grid:before,
+.responsive-grid:after {
+	display: table;
+	line-height: 0;
+	content: "";
+}
+
+.responsive-grid:after {
+	clear: both;
+}
+
+.responsive-grid > div {
+	float: left;
+	margin-left: 2.564102564102564%;
+	width: 100%;
+	background-color: #F0F0F0;
+	border-radius: 4px;
+	padding: 6px;
+	margin: 4px;
+	box-sizing: border-box;
+}
+
+@media (min-width: 1600px) {
+	.responsive-grid > div {
+		
+	}
+}
+
+@media (min-width: 1200px) {
+	.responsive-grid > div {
+		width: 31.623931623931625%;
+	}
+
+	.responsive-grid > div:nth-child(3n+1) {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 1199px) {
+	.responsive-grid > div {
+		width: 48.717948717948715%;
+	}
+
+	.responsive-grid > div:nth-child(odd) {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 767px) {
+	.responsive-grid > div {
+		margin-left : 0;
+		width: 100%;
+	}
+}
+
+@media (max-width: 479px) {}

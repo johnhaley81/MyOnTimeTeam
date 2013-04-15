@@ -20,19 +20,19 @@
 		},
 
 		getCurrentUserData: function () {
-			return $.ajax(this.getApiUrl('users/me'), {});
+			return $.ajax(this.getApiUrl('users/me', '&extend=all'), {});
 		},
 
 		getUsersData: function() {
-			return $.ajax(this.getApiUrl('users') + '&include_inactive=false', {});
+			return $.ajax(this.getApiUrl('users', '&include_inactive=false&extend=all'), {});
 		},
 
 		getItemDetailsForUser: function (itemType, userId) {
-			return $.ajax(this.getApiUrl(itemType) + '&page=1&page_size=1&group_field=assigned_to_name&columns=id&user_id=' + userId, {});
+			return $.ajax(this.getApiUrl(itemType, '&page=1&page_size=1&group_field=assigned_to_name&columns=id&user_id=' + userId), {});
 		},
 
-		getApiUrl: function (route) {
-			return '/ontime/proxy?resource=' + route;
+		getApiUrl: function (route, queryString) {
+			return '/ontime/proxy?resource=' + route + (queryString || "");
 		}
 	};
 }(window, document, jQuery));
