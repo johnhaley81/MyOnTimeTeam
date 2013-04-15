@@ -240,6 +240,7 @@
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\myOnTimeTeam.js" />
     <Content Include="Scripts\utils.js" />
     <Content Include="_AppStart.cshtml" />
     <Content Include="Views\Accounts\LogOn.cshtml" />

@@ -11,13 +11,8 @@
 		@Styles.Render("~/Content/bootstrap")
 		@Scripts.Render("~/bundles/modernizr")
 		@Scripts.Render("~/bundles/jquery")
-		@*@Scripts.Render("~/bundles/jqueryval")*@
+		@Scripts.Render("~/bundles/myOnTimeTeam")
 		@Scripts.Render("~/bundles/bootstrap")
-		<script type="text/javascript">
-			function getApiUrl(route) {
-				return '/ontime/proxy?resource=' + route;
-			}
-		</script>
 	</head>
 	<body>
 		<header>
@@ -32,10 +27,12 @@
 							<script>
 								window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
 								window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
-								$.ajax(getApiUrl('users/me'), {}).success(function (response) {
-									var data = response.data;
-									$("#userTag").text(data.first_name + " " + data.last_name);
-								});
+								//window.myOnTimeTeam.getCurrentUserData().done(function (response) {
+								//	var data = response.data;
+								//	$("#userTag").text(data.first_name + " " + data.last_name);
+								//});
+
+								window.myOnTimeTeam.refreshData();
 							</script>
 							<text>
 								<div class="btn-group">
