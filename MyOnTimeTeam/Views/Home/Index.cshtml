@@ -1,5 +1,5 @@
-﻿<div id="body">
-	<section class="featured">
+﻿<div>
+	<section class="">
 		<div class="content-wrapper">
 			<div class="responsive-grid">
 				<!-- ko foreach: users -->
@@ -9,10 +9,8 @@
 								<img class="media-object" data-bind="attr: { src: userImage }" />
 							</a>
 							<div class="media-body">
-								<div>
-									<div class="close">&times;</div>
-									<h4><!-- ko text: fullName --><!-- /ko --></h4>
-								</div>
+								<div class="close">&times;</div>
+								<h4><!-- ko text: fullName --><!-- /ko --></h4>
 								<div>
 									<span class="label label-info">Defects: <!-- ko text: defectsCount --><!-- /ko --></span>
 									<span class="label label-info">Features: <!-- ko text: featuresCount --><!-- /ko --></span>

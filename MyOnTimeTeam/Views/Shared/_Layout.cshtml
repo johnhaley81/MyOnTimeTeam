@@ -16,34 +16,21 @@
 		@Scripts.Render("~/bundles/myOnTimeTeam")
 	</head>
 	<body>
-		<header>
-			<div class="content-wrapper">
-				<div class="float-left">
-					<p class="site-title"><a href="~/">My OnTime Team</a></p>
-				</div>
-				<div class="float-right">
-					<section id="login">
-						@if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
-							!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
-							<script>
-								window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
-								window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
-								window.myOnTimeTeam.getCurrentUserData().done(function (response) {
-									var data = response.data;
-									$("#userImage").attr("src", data.image_url);
-									$("#userName").text(data.first_name + " " + data.last_name);
-								});
-
-								window.myOnTimeTeam.refreshData();
-							</script>
-							<text>
-								<div class="btn-group">
-									<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-										<img id="userImage" class="pull-left" height="25" width="25"/>
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<div class="navbar navbar-inverse">
+						<div class="navbar-inner">
+							<a class="brand active" href="~/">My OnTime Team</a>
+							@if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+								!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
+								<div class="btn-group pull-right">
+									<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+										<img id="userImage" class="icon-" height="16" width="16"/>
 										<span id="userName"></span>
 									</a>
 									<ul class="dropdown-menu">
-										<li class="dropdown-submenu">
+										<li class="dropdown-submenu pull-left">
 											<a>Sort by</a>
 											<ul class="dropdown-menu">
 												<li><a>Work Remaining</a></li>
@@ -59,33 +46,42 @@
 										</li>
 									</ul>
 								</div>
-							</text>
-						} else {
-							<ul>
-								<li><a id="loginButton">Log in</a></li>
-							</ul>
-						}
-					</section>
+								<script>
+									window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
+									window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
+									window.myOnTimeTeam.getCurrentUserData().done(function (response) {
+										var data = response.data;
+										$("#userImage").attr("src", data.user_image);
+										$("#userName").text(data.first_name + " " + data.last_name);
+									});
+
+									window.myOnTimeTeam.refreshData();
+								</script>
+							} else {
+								<a class="btn btn-primary btn-small pull-right" id="loginButton">Log in</a>
+							}
+						</div>
+					</div>
 				</div>
 			</div>
-		</header>
-		@RenderBody()
+			@RenderBody()
 
-		@RenderSection("scripts", required: false)
-		<script>
-			if ($('#loginButton')) {
-				$('#loginButton').click(function () {
-					$.modalPopup('accounts/logon');
-				});
-			}
-			if ($('#logoutButton')) {
-				$('#logoutButton').click(function () {
-					document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
-					document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+			@RenderSection("scripts", required: false)
+			<script>
+				if ($('#loginButton')) {
+					$('#loginButton').click(function () {
+						$.modalPopup('accounts/logon');
+					});
+				}
+				if ($('#logoutButton')) {
+					$('#logoutButton').click(function () {
+						document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+						document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
 
-					document.location = "";
-				});
-			}
-		</script>
+						document.location = "";
+					});
+				}
+			</script>
+		</div>
 	</body>
 </html>
