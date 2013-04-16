@@ -5,6 +5,8 @@
 		this.lastName = serverUser.last_name;
 		this.userImage = serverUser.user_image;
 
+		this.dataLoaded = ko.observable(false);
+
 		this.fullName = ko.computed(function () {
 			return this.firstName + " " + this.lastName;
 		}, this);
@@ -80,6 +82,7 @@
 						+ getWorkRemainingMinutes(features)
 						+ getWorkRemainingMinutes(incidents))
 						/ 60) + " Hours");
+					user.dataLoaded(true);
 				})
 				.always(function () {
 					setTimeout(function () {

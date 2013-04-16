@@ -732,6 +732,64 @@ tr.pager td {
         }
 }
 
+/* Spinning element */
+.spin {
+	-webkit-animation: spin 1s infinite linear;
+	-moz-animation: spin 1s infinite linear;
+	-o-animation: spin 1s infinite linear;
+	-ms-animation: spin 1s infinite linear;
+	animation: spin 1s infinite linear;
+}
+
+@-webkit-keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@-moz-keyframes spin {
+	0% {
+		-moz-transform: rotate(0deg);
+	}
+
+	100% {
+		-moz-transform: rotate(360deg);
+	}
+}
+
+@-o-keyframes spin {
+	0% {
+		-o-transform: rotate(0deg);
+	}
+
+	100% {
+		-o-transform: rotate(360deg);
+	}
+}
+
+@-ms-keyframes spin {
+	0% {
+		-ms-transform: rotate(0deg);
+	}
+
+	100% {
+		-ms-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
 
 /* responsive grid */
 .responsive-grid {
@@ -751,12 +809,13 @@ tr.pager td {
 
 .responsive-grid > div {
 	float: left;
-	margin-left: 2.564102564102564%;
 	width: 100%;
-	background-color: #F0F0F0;
-	border-radius: 4px;
 	padding: 6px;
-	margin: 4px;
+	margin-left: 2.564102564102564%;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 

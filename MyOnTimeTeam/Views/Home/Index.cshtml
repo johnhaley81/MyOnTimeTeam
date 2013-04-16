@@ -3,21 +3,26 @@
 		<div class="content-wrapper">
 			<div class="responsive-grid">
 				<!-- ko foreach: users -->
-					<div class="">
+					<div class="well">
 						<div class="media">
 							<a class="pull-left">
-								<img class="media-object" data-bind="attr: { src: userImage }" />
+								<img class="media-object thumbnail" data-bind="attr: { src: userImage }" />
 							</a>
 							<div class="media-body">
-								<div class="close">&times;</div>
+								<div class="close" data-bind="click: $parent.hideUser">&times;</div>
 								<h4><!-- ko text: fullName --><!-- /ko --></h4>
-								<div>
-									<span class="label label-info">Defects: <!-- ko text: defectsCount --><!-- /ko --></span>
-									<span class="label label-info">Features: <!-- ko text: featuresCount --><!-- /ko --></span>
-									<span class="label label-info">Incidents: <!-- ko text: incidentsCount --><!-- /ko --></span>
+								<div data-bind="visible: dataLoaded">
+									<div>
+										<span class="label label-info">Defects: <!-- ko text: defectsCount --><!-- /ko --></span>
+										<span class="label label-info">Features: <!-- ko text: featuresCount --><!-- /ko --></span>
+										<span class="label label-info">Incidents: <!-- ko text: incidentsCount --><!-- /ko --></span>
+									</div>
+									<div>
+										<span>Estimated work remaining: <!-- ko text: workRemaining --><!-- /ko --></span>
+									</div>
 								</div>
-								<div>
-									<span>Estimated work remaining: <!-- ko text: workRemaining --><!-- /ko --></span>
+								<div data-bind="visible: !dataLoaded()">
+									<i class="icon icon-refresh spin"></i>
 								</div>
 							</div>
 						</div>
