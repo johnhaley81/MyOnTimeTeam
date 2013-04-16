@@ -83,11 +83,21 @@
 						+ getWorkRemainingMinutes(incidents))
 						/ 60) + " Hours");
 					user.dataLoaded(true);
-				})
-				.always(function () {
+
 					setTimeout(function () {
 						myOnTimeTeam.getNextUsersData(usersWaitingForData);
 					}, 333);
+				})
+				.fail(function () {
+					//Something failed. We're probably making too many requests at a time. Add
+					//this user back to the list, wait a second, then start the requests again.
+					usersWaitingForData.unshift(user);
+					setTimeout(function () {
+						myOnTimeTeam.getNextUsersData(usersWaitingForData);
+					}, 1000);
+				})
+				.always(function () {
+
 				});
 		},
 
