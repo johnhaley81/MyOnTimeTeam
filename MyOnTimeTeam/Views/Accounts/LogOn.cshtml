@@ -4,9 +4,13 @@
     ViewBag.Title = "Log On";
 }
 
-<h2>LogOn</h2>
-<div class="modal hide fade">
-	@using (Html.BeginForm()) {
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<h3>Login</h3>
+</div>
+@using (Html.BeginForm("LogOn","Accounts", FormMethod.Post, new {@class = "modal-form"}))
+{
+	<div class="modal-body">
 		@Html.AntiForgeryToken()
 		@Html.ValidationSummary(true)
 
@@ -20,19 +24,15 @@
 				@Html.EditorFor(model => model.OnTimeUrl)
 				@Html.ValidationMessageFor(model => model.OnTimeUrl)
 			</div>
-
-			<p>
-				<input type="submit" value="Create" />
-			</p>
 		</fieldset>
-	}
 
-	<div>
-		@Html.ActionLink("Back to List", "Index")
+		@section Scripts {
+			@Scripts.Render("~/bundles/jqueryval")
+		}
+
 	</div>
-
-	@section Scripts {
-		@Scripts.Render("~/bundles/jqueryval")
-	}
-
-</div>
+	<div class="modal-footer">
+		<input class="btn" type="button" data-dismiss="modal" value="Close" />
+		<input class="btn btn-primary" type="submit" value="Login" />
+	</div>
+}
