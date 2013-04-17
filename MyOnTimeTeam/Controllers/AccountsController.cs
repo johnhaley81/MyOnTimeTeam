@@ -87,7 +87,7 @@ namespace MyOnTimeTeam.Controllers
 
 		private string getRedirectUri()
 		{
-			return "http://" + Utils.GetHostName() + "/accounts/receive_code";
+			return Utils.GetSiteRoot() + "/accounts/receive_code";
 		}
 	}
 }
