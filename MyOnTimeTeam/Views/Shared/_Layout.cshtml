@@ -1,16 +1,85 @@
-﻿<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
-    @RenderBody()
+﻿@using MyOnTimeTeam.Models;
+@using MyOnTimeTeam.Infrastructure;
 
-    @Scripts.Render("~/bundles/jquery")
-    @RenderSection("scripts", required: false)
-</body>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>@ViewBag.Title</title>
+		@Styles.Render("~/Content/css")
+		@Styles.Render("~/Content/bootstrap")
+		@Scripts.Render("~/bundles/modernizr")
+		@Scripts.Render("~/bundles/jquery")
+		@*@Scripts.Render("~/bundles/jqueryval")*@
+		@Scripts.Render("~/bundles/bootstrap")
+		<script type="text/javascript">
+			function getApiUrl(route) {
+				return '/ontime/proxy?resource=' + route;
+			}
+		</script>
+	</head>
+	<body>
+		<header>
+			<div class="content-wrapper">
+				<div class="float-left">
+					<p class="site-title"><a href="~/">My OnTime Team</a></p>
+				</div>
+				<div class="float-right">
+					<section id="login">
+						@if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+							!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
+							<script>
+								window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
+								window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
+								$.ajax(getApiUrl('users/me'), {}).success(function (response) {
+									var data = response.data;
+									$("#userTag").text(data.first_name + " " + data.last_name);
+								});
+							</script>
+							<text>
+								<div class="btn-group">
+									<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+										@*<img id="userTag" alt="" class="pull-left" />*@
+										<span id="userTag"></span>
+										<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu">
+										<li class="dropdown-submenu">
+											<a>Sort by</a>
+											<ul class="dropdown-menu">
+												<li><a>Work Remaining</a></li>
+												<li><a>User Name</a></li>
+											</ul>
+										</li>
+										<li>
+											<a>Show Hidden Users</a>
+										</li>
+										<li class="divider"></li>
+										<li>
+											<a>Log Out</a>
+										</li>
+									</ul>
+								</div>
+							</text>
+						} else {
+							<ul>
+								<li><a id="loginButton">Log in</a></li>
+							</ul>
+						}
+					</section>
+				</div>
+			</div>
+		</header>
+		@RenderBody()
+
+		@RenderSection("scripts", required: false)
+		<script>
+			if ($('#loginButton')) {
+				$('#loginButton').click(function () {
+					$.modalPopup('accounts/logon');
+				});
+			}
+		</script>
+	</body>
 </html>

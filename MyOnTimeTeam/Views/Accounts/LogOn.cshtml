@@ -1,0 +1,38 @@
+﻿@model MyOnTimeTeam.Models.LogOnModel
+
+@{
+    ViewBag.Title = "Log On";
+}
+
+<h2>LogOn</h2>
+<div class="modal hide fade">
+	@using (Html.BeginForm()) {
+		@Html.AntiForgeryToken()
+		@Html.ValidationSummary(true)
+
+		<fieldset>
+			<legend>LogOnModel</legend>
+
+			<div class="editor-label">
+				@Html.LabelFor(model => model.OnTimeUrl)
+			</div>
+			<div class="editor-field">
+				@Html.EditorFor(model => model.OnTimeUrl)
+				@Html.ValidationMessageFor(model => model.OnTimeUrl)
+			</div>
+
+			<p>
+				<input type="submit" value="Create" />
+			</p>
+		</fieldset>
+	}
+
+	<div>
+		@Html.ActionLink("Back to List", "Index")
+	</div>
+
+	@section Scripts {
+		@Scripts.Render("~/bundles/jqueryval")
+	}
+
+</div>
