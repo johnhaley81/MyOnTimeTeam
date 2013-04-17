@@ -16,55 +16,102 @@
 		@Scripts.Render("~/bundles/myOnTimeTeam")
 		<script type="text/javascript">
 			window.siteRoot = '@Utils.GetSiteRoot()';
+			if (window.localStorage.getItem('sort') === null) {
+				window.localStorage.setItem('sort', 'name');
+			}
+			if (window.localStorage.getItem('hiddenUsers') === null) {
+				window.localStorage.setItem('hiddenUsers', []);
+			}
+			if (window.localStorage.getItem('showHidden') === null) {
+				window.localStorage.setItem('showHidden', false);
+			}
 		</script>
 	</head>
 	<body>
 		<div class="container">
-			<div class="row">
-				<div class="span12">
-					<div class="navbar navbar-inverse">
-						<div class="navbar-inner">
-							<a class="brand active" href="~/">My OnTime Team</a>
-							@if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
-								!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
-								<div class="btn-group pull-right">
-									<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-										<img id="userImage" class="icon-" height="16" width="16"/>
-										<span id="userName"></span>
-									</a>
+			<div class="navbar navbar-inverse">
+				<div class="navbar-inner">
+					<a class="brand active" href="~/">My OnTime Team</a>
+					@if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+						!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
+						<div class="btn-group pull-right">
+							<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+								<img id="userImage" class="icon-" height="16" width="16"/>
+								<span id="userName"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li class="dropdown-submenu pull-left">
+									<a href="#">Sort by</a>
 									<ul class="dropdown-menu">
-										<li class="dropdown-submenu pull-left">
-											<a>Sort by</a>
-											<ul class="dropdown-menu">
-												<li><a>Work Remaining</a></li>
-												<li><a>User Name</a></li>
-											</ul>
-										</li>
-										<li>
-											<a>Show Hidden Users</a>
-										</li>
-										<li class="divider"></li>
-										<li>
-											<a id="logoutButton">Log Out</a>
-										</li>
+										<li data-sortValue="name"><a href="#">
+											User Name
+											<span class="hide icon icon-ok"></span>
+										</a></li>
+										<li data-sortValue="work"><a href="#">
+											Work Remaining
+											<span class="hide icon icon-ok"></span>
+										</a></li>
+										<li data-sortValue="defects"><a href="#">
+											Defect Count
+											<span class="hide icon icon-ok"></span>
+										</a></li>
+										<li data-sortValue="features"><a href="#">
+											Feature Count
+											<span class="hide icon icon-ok"></span>
+										</a></li>
+										<li data-sortValue="incidents"><a href="#">
+											Incident Count
+											<span class="hide icon icon-ok"></span>
+										</a></li>
+										<li data-sortValue="items"><a href="#">
+											Item Count
+											<span class="hide icon icon-ok"></span>
+										</a></li>
 									</ul>
-								</div>
-								<script>
-									window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
-									window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
-									window.myOnTimeTeam.getCurrentUserData().done(function (response) {
-										var data = response.data;
-										$("#userImage").attr("src", data.user_image);
-										$("#userName").text(data.first_name + " " + data.last_name);
-									});
-
-									window.myOnTimeTeam.refreshData();
-								</script>
-							} else {
-								<a class="btn btn-primary btn-small pull-right" id="loginButton">Log in</a>
-							}
+								</li>
+								<li id="showHidden" ><a href="#">
+									Show Hidden Users
+									<span class="hide icon icon-ok"></span>
+								</a></li>
+								<li class="divider"></li>
+								<li>
+									<a href="#" id="logoutButton">Log Out</a>
+								</li>
+							</ul>
 						</div>
-					</div>
+						<script>
+							window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
+							window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
+							window.myOnTimeTeam.getCurrentUserData().done(function (response) {
+								var data = response.data;
+								$("#userImage").attr("src", data.user_image);
+								$("#userName").text(data.first_name + " " + data.last_name);
+							});
+
+							var viewModel = window.myOnTimeTeam.refreshData();
+
+							var sort = window.localStorage.getItem('sort') || 'name'; //name, work
+							$('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
+							$('[data-sortValue]').click(function () {
+								var newSort = $(this).attr('data-sortValue');
+								localStorage.setItem('sort', newSort);
+								viewModel.sortBy(newSort);
+								$('[data-sortValue] .icon-ok').addClass('hide');
+								$('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
+							});
+							$('#showHidden .icon-ok').toggleClass('hide',
+								localStorage.getItem("showHidden") !== "true"
+							);
+							$('#showHidden a').click(function () {
+								var newShow = localStorage.getItem("showHidden") !== "true";
+								$('#showHidden .icon-ok').toggleClass('hide', !newShow)
+								localStorage.setItem("showHidden", newShow);
+								viewModel.showHidden(newShow);
+							});
+						</script>
+					} else {
+						<a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
+					}
 				</div>
 			</div>
 			@RenderBody()

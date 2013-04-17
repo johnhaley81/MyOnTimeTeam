@@ -2,14 +2,15 @@
 </div>
 
 <script id="gridTmpl" type="text/html">
-	<!-- ko foreach: users -->
-	<div class="well">
+	<!-- ko foreach: usersSorted -->
+	<div class="well" data-bind="visible: visible">
 		<div class="media">
 			<a class="pull-left">
 				<img class="media-object thumbnail" data-bind="attr: { src: userImage }" />
 			</a>
 			<div class="media-body">
-				<div class="close" data-bind="click: $parent.hideUser">&times;</div>
+				<div class="close" data-bind="visible: !hidden(), click: hide" title="Hide this user"><i class="icon-remove"></i></div>
+				<div class="close" data-bind="visible: hidden, click: show" title="Show this user"><i class="icon-eye-open"></i></div>
 				<h4><!-- ko text: fullName --><!-- /ko --></h4>
 				<div data-bind="visible: dataLoaded">
 					<div>
