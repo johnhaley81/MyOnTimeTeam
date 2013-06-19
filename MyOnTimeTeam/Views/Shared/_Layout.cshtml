@@ -115,7 +115,10 @@
 				</div>
 			</div>
 			@RenderBody()
+            @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+						!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))) {
             <div class ="welcome"><p>Please log in to My OnTime Team.</p></div>
+            }
 
 			@RenderSection("scripts", required: false)
 			<script>
