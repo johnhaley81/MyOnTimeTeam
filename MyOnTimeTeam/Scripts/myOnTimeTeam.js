@@ -254,7 +254,7 @@
     var recursivepush = function (root, projarray, indentLevel) {
         root["indentedName"] = root.name;
         for (var j = 0; j < indentLevel; j++) {
-            root["indentedName"] = "»»»»" + root["indentedName"];
+            root["indentedName"] = "»" + root["indentedName"];
         }
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
