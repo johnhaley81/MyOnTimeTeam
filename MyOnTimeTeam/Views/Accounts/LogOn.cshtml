@@ -5,34 +5,48 @@
 }
 
 <div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	<h3>Login</h3>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Login</h3>
 </div>
-@using (Html.BeginForm("LogOn","Accounts", FormMethod.Post, new {@class = "modal-form"}))
+@using (Html.BeginForm("OnTimeAuth", "Accounts", FormMethod.Post, new { @class = "modal-form" }))
 {
-	<div class="modal-body">
-		@Html.AntiForgeryToken()
-		@Html.ValidationSummary(true)
+    <div class="modal-body">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
 
-		<fieldset>
-			<legend>LogOnModel</legend>
+        <fieldset>
+            <legend>LogOnModel</legend>
 
-			<div class="editor-label">
-				@Html.LabelFor(model => model.OnTimeUrl)
-			</div>
-			<div class="editor-field">
-				@Html.EditorFor(model => model.OnTimeUrl)
-				@Html.ValidationMessageFor(model => model.OnTimeUrl)
-			</div>
-		</fieldset>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.OnTimeUrl)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.OnTimeUrl)
+                @Html.ValidationMessageFor(model => model.OnTimeUrl)
+            </div>
+        </fieldset>
 
-		@section Scripts {
-			@Scripts.Render("~/bundles/jqueryval")
-		}
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
 
-	</div>
-	<div class="modal-footer">
-		<input class="btn" type="button" data-dismiss="modal" value="Close" />
-		<input class="btn btn-primary" type="submit" value="Login" />
-	</div>
+        }
+
+    </div>
+    <div class="modal-footer">
+        <input class="btn" type="button" data-dismiss="modal" value="Close" />
+        <input class="btn btn-primary" id="modallogin" type="button" value="Login" />
+    </div>
+    <script>
+        $('#modallogin').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/accounts/OnTimeAuth',
+                data: $('.modal-form').serialize(),
+                success: function (data, textStatus, jqXHR) {
+                    $('.modal-form').replaceWith('<iframe src=\"' + data + '\" style=\"height:100%;width:100%;display:block;\"></iframe>');
+                }
+            });
+        });
+    </script>
+    
 }

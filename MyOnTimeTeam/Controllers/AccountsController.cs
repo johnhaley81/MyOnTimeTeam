@@ -21,11 +21,11 @@ namespace MyOnTimeTeam.Controllers
 		[GET("login")]
 		public ActionResult LogOn()
 		{
-			return PartialView();
+            return PartialView();
 		}
 
 		[POST("login")]
-		public ActionResult LogOn(LogOnModel model, string returnUrl)
+		public ActionResult OnTimeAuth(LogOnModel model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -35,12 +35,24 @@ namespace MyOnTimeTeam.Controllers
 					.Replace("{redirect_url}", HttpUtility.UrlEncode(getRedirectUri()))
 					.Replace("{state}", HttpUtility.UrlEncode(model.OnTimeUrl));
 
-				return Redirect(url);
+
+
+                JsonResult resp = new JsonResult();
+                resp.Data = url;
+
+                return resp;
+
+
 			}
 
 			// If we got this far, something failed, redisplay form
 			return View(model);
 		}
+
+        public ActionResult OnTimeAuth(string url){
+            ViewBag.Url = url;
+            return PartialView();
+        }
 
 		[GET("receive_code")]
 		public ActionResult ReceiveCode(string code, string state, string error, string error_description)
@@ -75,7 +87,7 @@ namespace MyOnTimeTeam.Controllers
 
 					HttpContext.Response.AppendCookie(new HttpCookie(Constants.ONTIME_OAUTH_TOKEN, accessToken));
 					HttpContext.Response.AppendCookie(new HttpCookie(Constants.ONTIME_URL, state));
-					return Redirect(Utils.GetSiteRoot());
+					return Redirect("/accounts/tokenRedirect");
 				}
 			}
 			catch (Exception)
@@ -84,6 +96,11 @@ namespace MyOnTimeTeam.Controllers
 			}
 			return null;
 		}
+
+        public ActionResult tokenRedirect()
+        {
+            return View();
+        }
 
 		private string getRedirectUri()
 		{
