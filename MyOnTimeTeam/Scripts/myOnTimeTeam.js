@@ -64,12 +64,15 @@
         refreshData: function () {
             var viewModel = {};
 
-            $.when(this.getAllUsersData(), this.getProjects()).done(function (usersResponse, projectsResponse) {
+            $.when(this.getAllUsersData(), this.getProjects(), this.getReleases()).done(function (usersResponse, projectsResponse, releasesResponse) {
                 if (!usersResponse || !usersResponse[0] || !usersResponse[0].data)
                     return;
 
                 if (!projectsResponse || !projectsResponse[0] || !projectsResponse[0].data)
                     return;
+
+                if(!releasesResponse || !releasesResponse[0] || !releasesResponse[0].data)
+                return;
 
                 var projectArray = [];
 
@@ -80,6 +83,15 @@
 
 
                 viewModel.projects = ko.mapping.fromJS(projectArray);
+
+                var releaseArray = [];
+
+                for (var i = 0 ; i < releasesResponse[0].data.length ; i++)
+                {
+                    recursivepush(releasesResponse[0].data[i], releaseArray, 0);
+                }
+
+                viewModel.releases = ko.mapping.fromJS(releaseArray);
 
                 var users = usersResponse[0].data,
 					userModels = [],
@@ -246,10 +258,15 @@
         }
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
-            for (var i = 0; i < root.children.length ; i++) {
-                recursivepush(root.children[i], projarray, indentLevel + 1);
+            if (root.children != null) {
+                for (var i = 0; i < root.children.length ; i++)
+                {
+                    recursivepush(root.children[i], projarray, indentLevel + 1);
+                }
             }
         }
     }
+
+   
 
 }(window, document, jQuery));
