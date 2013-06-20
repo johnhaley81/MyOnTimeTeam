@@ -64,7 +64,7 @@ namespace MyOnTimeTeam.Controllers
 			string onTimeUrl = Request.Cookies[Constants.ONTIME_URL].Value;
 			string accessToken = Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value;
 			var apiCallUrl = new UriBuilder(onTimeUrl);
-			apiCallUrl.Path += "/api/v1/" + resource;
+			apiCallUrl.Path += "/api/v2/" + resource;
 
 			var finalParameters = new Dictionary<string, string>();
 
