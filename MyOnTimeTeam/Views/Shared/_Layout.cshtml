@@ -69,6 +69,16 @@
                                         </a></li>
                                     </ul>
                                 </li>
+                                <li class="dropdown-submenu pull-left">
+                                    <a href="#">Filter by</a>
+                                    <ul class="dropdown-menu">
+                                    <!-- ko foreach: projects -->
+                                        <li>
+                                            <!-- ko text: name --><!-- /ko -->
+                                        </li>
+                                    <!-- /ko -->
+                                    </ul>
+                                </li>
                                 <li id="showHidden" ><a href="#">
                                     Show Hidden Users
                                     <span class="hide icon icon-ok"></span>
