@@ -72,11 +72,22 @@
                                 <li class="dropdown-submenu pull-left">
                                     <a href="#">Filter by</a>
                                     <ul class="dropdown-menu">
+                                        <li>---------------</li>
+                                        <li>Projects</li>
+                                        <li>---------------</li>
                                     <!-- ko foreach: projects -->
                                         <li>
                                             <!-- ko text: name --><!-- /ko -->
                                         </li>
                                     <!-- /ko -->
+                                        <li>---------------</li>
+                                        <li>Releases</li>
+                                        <li>---------------</li>
+                                        <!-- ko foreach: releases -->
+                                        <li>
+                                            <!-- ko text: name --><!-- /ko -->
+                                        </li>
+                                        <!-- /ko -->
                                     </ul>
                                 </li>
                                 <li id="showHidden" ><a href="#">
