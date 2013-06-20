@@ -253,10 +253,11 @@
 
     var recursivepush = function (root, projarray, indentLevel) {
         root["indentedName"] = root.name;
+        
 
 
         for (var j = 0; j <= indentLevel; j++) {
-            root["indentedName"] = "<span style=\"margin-left:1em\"></span>" + root["indentedName"];
+            root["indentedName"] = "<li id=\""+root.name+"\"> <a href=\"#\">" + root["indentedName"] + "<span class=\"hide icon icon-ok\"></span></a></li>";
         }
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
