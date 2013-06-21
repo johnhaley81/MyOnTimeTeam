@@ -64,7 +64,8 @@
         refreshData: function () {
             var viewModel = {};
 
-            $.when(this.getAllUsersData(), this.getProjects(), this.getReleases()).done(function (usersResponse, projectsResponse, releasesResponse) {
+            $.when(this.getAllUsersData(), this.getProjects(), this.getReleases()).done(function (usersResponse, projectsResponse, releasesResponse)
+            {
                 if (!usersResponse || !usersResponse[0] || !usersResponse[0].data)
                     return;
 
@@ -83,6 +84,8 @@
 
 
                 viewModel.projects = ko.mapping.fromJS(projectArray);
+
+                viewModel.filterProjectsBy = ko.observable(window.localStorage.getItem('filter') || "nofilter");
 
                 var releaseArray = [];
 
@@ -104,7 +107,7 @@
                     userModels.push(new User(users[i], viewModel.showHidden));
                 }
 
-
+                viewModel.filterReleasesBy = ko.observable(window.localStorage.getItem('releasefilter') || "nofilter");
 
                 viewModel.users = ko.observableArray(userModels);
                 viewModel.usersSorted = ko.computed(function () {
@@ -139,6 +142,31 @@
                 }, viewModel);
                 ko.applyBindings(viewModel);
 
+                var filtersort = window.localStorage.getItem('filter');
+
+                if (filtersort)
+                    $('[data-filtervalue="' + filtersort + '"] .icon-ok').removeClass('hide');
+
+                $('[data-filtervalue]').click(function () {
+                    var newFilter = $(this).attr('data-filtervalue');
+                    localStorage.setItem('filter', newFilter);
+                    viewModel.filterProjectsBy(newFilter);
+                    $('[data-filtervalue] .icon-ok').addClass('hide');
+                    $('[data-filtervalue="' + newFilter + '"] .icon-ok').removeClass('hide');
+                });
+
+                var releasefiltersort = window.localStorage.getItem('releasefilter');
+
+                if (releasefiltersort)
+                    $('[releaseData-filtervalue="' + releasefiltersort + '"] .icon-ok').removeClass('hide');
+
+                $('[releaseData-filtervalue]').click(function () {
+                    var newReleaseFilter = $(this).attr('releaseData-filtervalue');
+                    localStorage.setItem('releasefilter', newReleaseFilter);
+                    viewModel.filterReleasesBy(newReleaseFilter);
+                    $('[releaseData-filtervalue] .icon-ok').addClass('hide');
+                    $('[releaseData-filtervalue="' + newReleaseFilter + '"] .icon-ok').removeClass('hide');
+                });
                 // now copy the users from the view model into the array of users waiting for data so we can loop over them
                 // without disturbing the original view model
                 for (var i = 0, l = viewModel.users().length; i < l; i++) {
@@ -147,7 +175,7 @@
                         myOnTimeTeam.addUserToHandle(viewModel.users()[i]);
                 }
 
-                myOnTimeTeam.getNextUsersData(usersWaitingForData);
+                myOnTimeTeam.getNextUsersData(usersWaitingForData,  viewModel.filterProjectsBy(), viewModel.filterReleasesBy());
             });
 
             return viewModel;
@@ -163,7 +191,7 @@
             }
         },
 
-        getNextUsersData: function () {
+        getNextUsersData: function (userswaiting, projectFilter, releaseFilter) {
             var user = (usersToHandle || []).shift();
             if (!user) {
                 usersToHandle = null;	//The last user has been handled, clear out the list
@@ -171,7 +199,7 @@
                 return;
             }
 
-            this.getUserData(user)
+            this.getUserData(user, projectFilter ,releaseFilter)
 				.done(function () {
 				    setTimeout(function () {
 				        myOnTimeTeam.getNextUsersData();
@@ -187,10 +215,10 @@
 				});
         },
 
-        getUserData: function (user) {
-            return $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id)
-					, myOnTimeTeam.getItemDetailsForUser('features', user.id)
-					, myOnTimeTeam.getItemDetailsForUser('incidents', user.id))
+        getUserData: function (user, projectFilter, releaseFilter) {
+            return $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, projectFilter, releaseFilter)
+					, myOnTimeTeam.getItemDetailsForUser('features', user.id, projectFilter, releaseFilter)
+					, myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
 				.done(function (defects, features, incidents) {
 				    var getCount = function (itemType) {
 				        if (itemType && itemType[0] && itemType[0].metadata) {
@@ -231,8 +259,12 @@
             return $.ajax(this.getApiUrl('users', '&include_inactive=false&extend=all'), {});
         },
 
-        getItemDetailsForUser: function (itemType, userId) {
-            return $.ajax(this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&columns=project,release&user_id=' + userId), {});
+        getItemDetailsForUser: function (itemType, userId, projectId, releaseId) {
+            if (projectId === "nofilter")
+                projectId = "0";
+            if (releaseId === "nofilter")
+                releaseId === "0";
+            return $.ajax(this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&columns=project,release&user_id=' + userId + '&project_id='+ projectId + '&release_id='+ releaseId), {});
         },
 
         getApiUrl: function (route, queryString) {
@@ -251,14 +283,12 @@
 
     };
 
+   
+
     var recursivepush = function (root, projarray, indentLevel) {
-        root["indentedName"] = root.name;
+        root.value = root.id;
 
-        root["indentedName"] = "<span " + "id=\"" + root['name'].replace(/\s+/g, '') + "\"" + " style=\"margin-left:1em\"></span>" + root["indentedName"];
-
-        for (var j = 0; j < indentLevel; j++) {
-            root["indentedName"] = "<span style=\"margin-left:1em\"></span>" + root["indentedName"];
-        }
+     
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
             if (root.children != null) {

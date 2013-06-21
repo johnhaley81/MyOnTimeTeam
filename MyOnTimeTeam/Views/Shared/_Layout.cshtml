@@ -73,17 +73,17 @@
                                     <a href="#">Filter by</a>
                                     <ul class="dropdown-menu">
                                         <li><span style="font-weight: bold;">Projects</span></li>
-                                    <!-- ko foreach: projects -->
-                                      <li>
-                                            <a href="#"><span data-bind="html: indentedName"></span><span class="hide icon icon-ok"></span></a>
-                                        </li>
-                                    <!-- /ko -->
+                                         <!-- ko foreach: projects -->
+                                            <li data-bind="attr: {'data-filtervalue': value}">
+                                                <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
+                                            </li>
+                                        <!-- /ko -->
                                         <li class="divider"></li>
                                         <li><span style="font-weight: bold;">Releases</span></li>
                                         <!-- ko foreach: releases -->
-                                        <li>
-                                            <a href="#"><span data-bind="html: indentedName"></span><span class="hide icon icon-ok"></span></a>
-                                        </li>
+                                             <li data-bind="attr: { 'releaseData-filtervalue': value }">
+                                                <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
+                                            </li>
                                         <!-- /ko -->
                                     </ul>
                                 </li>
@@ -106,26 +106,37 @@
                                 $("#userName").text(data.first_name + " " + data.last_name);
                             });
 
-                            var viewModel = window.myOnTimeTeam.refreshData();
 
-                            var sort = window.localStorage.getItem('sort') || 'name'; //name, work
-                            $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
-                            $('[data-sortValue]').click(function () {
-                                var newSort = $(this).attr('data-sortValue');
-                                localStorage.setItem('sort', newSort);
-                                viewModel.sortBy(newSort);
-                                $('[data-sortValue] .icon-ok').addClass('hide');
-                                $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
-                            });
-                            $('#showHidden .icon-ok').toggleClass('hide',
-                                localStorage.getItem("showHidden") !== "true"
-                            );
-                            $('#showHidden a').click(function () {
-                                var newShow = localStorage.getItem("showHidden") !== "true";
-                                $('#showHidden .icon-ok').toggleClass('hide', !newShow)
-                                localStorage.setItem("showHidden", newShow);
-                                viewModel.showHidden(newShow);
-                            });
+                          
+                            var viwModel = window.myOnTimeTeam.refreshData();
+
+                                
+
+                                var sort = window.localStorage.getItem('sort') || 'name'; //name, work
+                                $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
+                                $('[data-sortValue]').click(function () {
+                                    var newSort = $(this).attr('data-sortValue');
+                                    localStorage.setItem('sort', newSort);
+                                    viewModel.sortBy(newSort);
+                                    $('[data-sortValue] .icon-ok').addClass('hide');
+                                    $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
+                                });
+
+
+
+
+                                $('#showHidden .icon-ok').toggleClass('hide',
+                                    localStorage.getItem("showHidden") !== "true"
+                                );
+                                $('#showHidden a').click(function () {
+                                    var newShow = localStorage.getItem("showHidden") !== "true";
+                                    $('#showHidden .icon-ok').toggleClass('hide', !newShow)
+                                    localStorage.setItem("showHidden", newShow);
+                                    viewModel.showHidden(newShow);
+                                });
+                           
+
+                        
                         </script>
                     } else {
                         <a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
