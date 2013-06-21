@@ -3,108 +3,102 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <title>@ViewBag.Title</title>
-        @Styles.Render("~/Content/css")
-        @Styles.Render("~/Content/bootstrap")
-        @Scripts.Render("~/bundles/modernizr")
-        @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/knockout")
-        @Scripts.Render("~/bundles/bootstrap")
-        @Scripts.Render("~/bundles/myOnTimeTeam")
-        <script type="text/javascript">
-            window.siteRoot = '@Utils.GetSiteRoot()';
-            if (window.localStorage.getItem('sort') === null) {
-                window.localStorage.setItem('sort', 'name');
-            }
-            if (window.localStorage.getItem('hiddenUsers') === null) {
-                window.localStorage.setItem('hiddenUsers', []);
-            }
-            if (window.localStorage.getItem('showHidden') === null) {
-                window.localStorage.setItem('showHidden', false);
-            }
-        </script>
-    </head>
-    <body>
-        <div class="container">
-            <div class="navbar navbar-inverse">
-                <div class="navbar-inner">
-                    <a class="brand active" href="~/">My OnTime Team</a>
-                    @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
-                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
-                        <div class="btn-group pull-right">
-                            <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-                                <img id="userImage" class="icon-" height="16" width="16"/>
-                                <span id="userName"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-submenu pull-left">
-                                    <a href="#">Sort by</a>
-                                    <ul class="dropdown-menu">
-                                        <li data-sortValue="name"><a href="#">
-                                            User Name
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/bootstrap")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/myOnTimeTeam")
+    <script type="text/javascript">
+        window.siteRoot = '@Utils.GetSiteRoot()';
+        if (window.localStorage.getItem('sort') === null) {
+            window.localStorage.setItem('sort', 'name');
+        }
+        if (window.localStorage.getItem('hiddenUsers') === null) {
+            window.localStorage.setItem('hiddenUsers', []);
+        }
+        if (window.localStorage.getItem('showHidden') === null) {
+            window.localStorage.setItem('showHidden', false);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <a class="brand active" href="~/">My OnTime Team</a>
+                @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
+                {
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+                            <img id="userImage" class="icon-" height="16" width="16" />
+                            <span id="userName"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-submenu pull-left">
+                                <a href="#">Sort by</a>
+                                <ul class="dropdown-menu">
+                                    <li data-sortvalue="name"><a href="#">User Name
                                             <span class="hide icon icon-ok"></span>
-                                        </a></li>
-                                        <li data-sortValue="work"><a href="#">
-                                            Work Remaining
+                                    </a></li>
+                                    <li data-sortvalue="work"><a href="#">Work Remaining
                                             <span class="hide icon icon-ok"></span>
-                                        </a></li>
-                                        <li data-sortValue="defects"><a href="#">
-                                            Defect Count
+                                    </a></li>
+                                    <li data-sortvalue="defects"><a href="#">Defect Count
                                             <span class="hide icon icon-ok"></span>
-                                        </a></li>
-                                        <li data-sortValue="features"><a href="#">
-                                            Feature Count
+                                    </a></li>
+                                    <li data-sortvalue="features"><a href="#">Feature Count
                                             <span class="hide icon icon-ok"></span>
-                                        </a></li>
-                                        <li data-sortValue="incidents"><a href="#">
-                                            Incident Count
+                                    </a></li>
+                                    <li data-sortvalue="incidents"><a href="#">Incident Count
                                             <span class="hide icon icon-ok"></span>
-                                        </a></li>
-                                        <li data-sortValue="items"><a href="#">
-                                            Item Count
+                                    </a></li>
+                                    <li data-sortvalue="items"><a href="#">Item Count
                                             <span class="hide icon icon-ok"></span>
-                                        </a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu pull-left">
-                                    <a href="#">Filter by</a>
-                                    <ul class="dropdown-menu">
-                                        <li><span style="font-weight: bold;">Projects</span></li>
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu pull-left">
+                                <a href="#">Filter by</a>
+                                <ul class="dropdown-menu">
+                                    <li><span style="font-weight: bold; margin-left:0.7em">Projects</span></li>
                                          <!-- ko foreach: projects -->
                                             <li data-bind="attr: {'data-filtervalue': value}">
                                                 <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
                                             </li>
                                         <!-- /ko -->
-                                        <li class="divider"></li>
-                                        <li><span style="font-weight: bold;">Releases</span></li>
-                                        <!-- ko foreach: releases -->
+                                    <li class="divider"></li>
+                                    <li><span style="font-weight: bold; margin-left:0.7em">Releases</span></li>
+                                    <!-- ko foreach: releases -->
                                              <li data-bind="attr: { 'releaseData-filtervalue': value }">
                                                 <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
                                             </li>
-                                        <!-- /ko -->
-                                    </ul>
-                                </li>
-                                <li id="showHidden" ><a href="#">
-                                    Show Hidden Users
+                                    <!-- /ko -->
+                                </ul>
+                            </li>
+                            <li id="showHidden"><a href="#">Show Hidden Users
                                     <span class="hide icon icon-ok"></span>
-                                </a></li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="#" id="logoutButton">Log Out</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <script>
-                            window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
-                            window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
-                            window.myOnTimeTeam.getCurrentUserData().done(function (response) {
-                                var data = response.data;
-                                $("#userImage").attr("src", data.user_image);
-                                $("#userName").text(data.first_name + " " + data.last_name);
-                            });
+                            </a></li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="#" id="logoutButton">Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <script>
+                        window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
+                        window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
+                        window.myOnTimeTeam.getCurrentUserData().done(function (response) {
+                            var data = response.data;
+                            $("#userImage").attr("src", data.user_image);
+                            $("#userName").text(data.first_name + " " + data.last_name);
+                        });
 
 
                           
@@ -137,23 +131,28 @@
                            
 
                         
-                        </script>
-                    } else {
-                        <a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
-                    }
-                </div>
+                    </script>
+                }
+                else
+                {
+                    <a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
+                }
             </div>
-            @RenderBody()
-            @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
-                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))) {
-            <div class ="welcome"><p>Please log in to My OnTime Team.</p></div>
-            }
+        </div>
+        @RenderBody()
+        @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
+        {
+            <div class="welcome">
+                <p>Please log in to My OnTime Team.</p>
+            </div>
+        }
 
-            @RenderSection("scripts", required: false)
-            <script>
-                if ($('#loginButton')) {
-                    $('#loginButton').click(function () {
-                        $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
+        @RenderSection("scripts", required: false)
+        <script>
+            if ($('#loginButton')) {
+                $('#loginButton').click(function () {
+                    $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
                     });
                 }
                 if ($('#logoutButton')) {
@@ -164,7 +163,7 @@
                         document.location = "";
                     });
                 }
-            </script>
-        </div>
-    </body>
+        </script>
+    </div>
+</body>
 </html>
