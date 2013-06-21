@@ -175,7 +175,10 @@
                         myOnTimeTeam.addUserToHandle(viewModel.users()[i]);
                 }
 
-                myOnTimeTeam.getNextUsersData(usersWaitingForData,  viewModel.filterProjectsBy(), viewModel.filterReleasesBy());
+                $.when(viewModel.filterProjectsBy(), viewModel.filterReleasesBy()).done(function (filterprojects, filterreleases)
+                {
+                    myOnTimeTeam.getNextUsersData(usersWaitingForData, filterprojects, filterreleases);
+                });
             });
 
             return viewModel;
