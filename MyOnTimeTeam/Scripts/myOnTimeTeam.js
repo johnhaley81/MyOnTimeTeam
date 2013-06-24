@@ -270,10 +270,10 @@
             var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&columns=project,release&user_id=' + userId);
 
             if (!(projectId === 'nofilter'))//if the ID isn't nofilter
-                if (typeof projectId == 'undefined')//if the ID isn't undefined
+                if (!(typeof projectId == 'undefined'))//if the ID isn't undefined
                     target = target + '&project_id=' + projectId;
             if (!(releaseId === 'nofilter'))//if the ID isn't nofilter
-                if (typeof releaseId == 'undefined')//if the ID isn't undefined
+                if (!(typeof releaseId == 'undefined'))//if the ID isn't undefined
                     target = target + '&release_id=' + releaseId;
 
             return $.ajax(target, {});
