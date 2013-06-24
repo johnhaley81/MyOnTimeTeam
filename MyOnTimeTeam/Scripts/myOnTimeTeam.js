@@ -156,7 +156,7 @@
                     viewModel.filterProjectsBy(newFilter);
                     $('[data-filtervalue] .icon-ok').addClass('hide');
                     $('[data-filtervalue="' + newFilter + '"] .icon-ok').removeClass('hide');
-                    window.myOnTimeTeam.refreshData();
+                    window.location.reload();
                    
                 });
 
@@ -173,8 +173,7 @@
                     viewModel.filterReleasesBy(newReleaseFilter);
                     $('[releaseData-filtervalue] .icon-ok').addClass('hide');
                     $('[releaseData-filtervalue="' + newReleaseFilter + '"] .icon-ok').removeClass('hide');
-                    window.myOnTimeTeam.refreshData();
-                    
+                    window.location.reload();
                 });
                 // now copy the users from the view model into the array of users waiting for data so we can loop over them
                 // without disturbing the original view model
@@ -287,7 +286,7 @@
                 if (!(typeof releaseId == 'undefined'))//if the ID isn't undefined
                     if(!(releaseId === '0')) //if the ID isnt 0 for "All Releases"
                          target = target + '&release_id=' + releaseId;
-            window.console.log("Inside getitems details");
+            
 
             return window.myOnTimeTeam.makeApiCall(target);
         },
@@ -315,7 +314,7 @@
             });
 
             
-            window.console.log("queue push: " + url);
+    
 
             return deferredResponse;
         },
@@ -328,7 +327,6 @@
             
             var request = queue.shift();
 
-            window.console.log("ajax " + request.url);
             $.ajax(request.url, {}).done(function (response){
                 request.deferredResponse.resolve(response);
             });
@@ -340,10 +338,11 @@
 
     window.setInterval(function () {
         myOnTimeTeam.processApiQueue();
-    }, 500);
+    }, 175);
     window.setInterval(function () {
-        window.myOnTimeTeam.refreshData();
+        window.location.reload();
     }, 1140000);
+   
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
