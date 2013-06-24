@@ -12,8 +12,12 @@ namespace MyOnTimeTeam.Controllers
 {
 	public class OnTimeController : Controller
 	{
+	    
+
 		public ActionResult Proxy(string resource)
 		{
+
+
 			// create the HTTP request
 			var url = GetUrl(resource); //using the URL of the specified resource
 			// forward any query parameters (other than resource)
@@ -28,6 +32,8 @@ namespace MyOnTimeTeam.Controllers
 				Request.InputStream.Seek(0, SeekOrigin.Begin);
 				Request.InputStream.CopyTo(request.GetRequestStream()); // and the same payload
 			}
+
+
 
 			// make the request and grab the response
 			Stream resultStream;

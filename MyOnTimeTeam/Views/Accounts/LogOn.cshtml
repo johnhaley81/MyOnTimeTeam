@@ -43,7 +43,7 @@
                 url: '/accounts/OnTimeAuth',
                 data: $('.modal-form').serialize(),
                 success: function (data, textStatus, jqXHR) {
-                    $('.modal-form').replaceWith('<iframe src=\"' + data + '\" style=\"height:100%;width:100%;display:block;\"></iframe>');
+                    $('.modal-form').replaceWith('<iframe id="loginFrame" src=\"' + data + '\" style=\"height:100%;width:99.3%;display:block;\"></iframe>');
                 }
             });
         });

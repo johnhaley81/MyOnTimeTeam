@@ -68,6 +68,7 @@
                                 <a href="#">Filter by</a>
                                 <ul class="dropdown-menu">
                                     <li><span style="font-weight: bold; margin-left:0.7em">Projects</span></li>
+                                    <li data-filtervalue="0"><a href="#">All Projects<span class="hide icon icon-ok"></span></a></li>
                                          <!-- ko foreach: projects -->
                                             <li data-bind="attr: {'data-filtervalue': value}">
                                                 <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
@@ -75,6 +76,7 @@
                                         <!-- /ko -->
                                     <li class="divider"></li>
                                     <li><span style="font-weight: bold; margin-left:0.7em">Releases</span></li>
+                                    <li  releaseData-filtervalue="0"><a href="#">All Releases<span class="hide icon icon-ok"></span></a></li>
                                     <!-- ko foreach: releases -->
                                              <li data-bind="attr: { 'releaseData-filtervalue': value }">
                                                 <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
@@ -102,7 +104,7 @@
 
 
                           
-                            var viwModel = window.myOnTimeTeam.refreshData();
+                            var viewModel = window.myOnTimeTeam.refreshData();
 
                                 
 
