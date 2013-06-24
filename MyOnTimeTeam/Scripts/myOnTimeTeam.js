@@ -169,25 +169,28 @@
                 });
                 // now copy the users from the view model into the array of users waiting for data so we can loop over them
                 // without disturbing the original view model
-                for (var i = 0, l = viewModel.users().length; i < l; i++) {
-                    var user = viewModel.users()[i];
-                    if (user.visible())
-                        myOnTimeTeam.addUserToHandle(viewModel.users()[i]);
-                }
+             
 
                 $.when(viewModel.filterProjectsBy(), viewModel.filterReleasesBy()).done(function (filterprojects, filterreleases)
                 {
                     myOnTimeTeam.getNextUsersData(usersWaitingForData, filterprojects, filterreleases);
+
+                    for (var i = 0, l = viewModel.users().length; i < l; i++) {
+                        var user = viewModel.users()[i];
+                        if (user.visible())
+                            myOnTimeTeam.addUserToHandle(viewModel.users()[i], filterprojects, filterreleases);
+                    }
+                    
                 });
             });
 
             return viewModel;
         },
 
-        addUserToHandle: function (user) {
+        addUserToHandle: function (user, filterprojects, filterreleases) {
             if (usersToHandle === null) {
                 usersToHandle = [user];
-                this.getNextUsersData();
+                this.getNextUsersData(null, filterprojects, filterreleases);
             }
             else {
                 usersToHandle.push(user);
@@ -205,7 +208,7 @@
             this.getUserData(user, projectFilter ,releaseFilter)
 				.done(function () {
 				    setTimeout(function () {
-				        myOnTimeTeam.getNextUsersData();
+				        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
 				    }, 333);
 				})
 				.fail(function () {
@@ -213,7 +216,7 @@
 				    //this user back to the list, wait a second, then start the requests again.
 				    usersToHandle.unshift(user);
 				    setTimeout(function () {
-				        myOnTimeTeam.getNextUsersData();
+				        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
 				    }, 1000);
 				});
         },
