@@ -66,19 +66,20 @@
 
             $.when(this.getAllUsersData(), this.getProjects(), this.getReleases()).done(function (usersResponse, projectsResponse, releasesResponse)
             {
-                if (!usersResponse || !usersResponse[0] || !usersResponse[0].data)
+                if (!usersResponse || !usersResponse.data)
                     return;
 
-                if (!projectsResponse || !projectsResponse[0] || !projectsResponse[0].data)
+                if (!projectsResponse || !projectsResponse.data)
                     return;
 
-                if(!releasesResponse || !releasesResponse[0] || !releasesResponse[0].data)
+                if(!releasesResponse ||  !releasesResponse.data)
                 return;
+                 
 
                 var projectArray = [];
 
-                for (var i = 0 ; i < projectsResponse[0].data.length ; i++) {
-                    recursivepush(projectsResponse[0].data[i], projectArray, 0);
+                for (var i = 0 ; i < projectsResponse.data.length ; i++) {
+                    recursivepush(projectsResponse.data[i], projectArray, 0);
 
                 }
 
@@ -89,14 +90,14 @@
 
                 var releaseArray = [];
 
-                for (var i = 0 ; i < releasesResponse[0].data.length ; i++)
+                for (var i = 0 ; i < releasesResponse.data.length ; i++)
                 {
-                    recursivepush(releasesResponse[0].data[i], releaseArray, 0);
+                    recursivepush(releasesResponse.data[i], releaseArray, 0);
                 }
 
                 viewModel.releases = ko.mapping.fromJS(releaseArray);
 
-                var users = usersResponse[0].data,
+                var users = usersResponse.data,
 					userModels = [],
 					usersWaitingForData = [];
 
@@ -147,12 +148,16 @@
                 if (filtersort)
                     $('[data-filtervalue="' + filtersort + '"] .icon-ok').removeClass('hide');
 
+                $('[data-filtervalue]').unbind('click');
+
                 $('[data-filtervalue]').click(function () {
                     var newFilter = $(this).attr('data-filtervalue');
                     localStorage.setItem('filter', newFilter);
                     viewModel.filterProjectsBy(newFilter);
                     $('[data-filtervalue] .icon-ok').addClass('hide');
                     $('[data-filtervalue="' + newFilter + '"] .icon-ok').removeClass('hide');
+                    window.myOnTimeTeam.refreshData();
+                   
                 });
 
                 var releasefiltersort = window.localStorage.getItem('releasefilter');
@@ -160,12 +165,16 @@
                 if (releasefiltersort)
                     $('[releaseData-filtervalue="' + releasefiltersort + '"] .icon-ok').removeClass('hide');
 
+                $('[releaseData-filtervalue]').unbind('click');
+
                 $('[releaseData-filtervalue]').click(function () {
                     var newReleaseFilter = $(this).attr('releaseData-filtervalue');
                     localStorage.setItem('releasefilter', newReleaseFilter);
                     viewModel.filterReleasesBy(newReleaseFilter);
                     $('[releaseData-filtervalue] .icon-ok').addClass('hide');
                     $('[releaseData-filtervalue="' + newReleaseFilter + '"] .icon-ok').removeClass('hide');
+                    window.myOnTimeTeam.refreshData();
+                    
                 });
                 // now copy the users from the view model into the array of users waiting for data so we can loop over them
                 // without disturbing the original view model
@@ -227,8 +236,8 @@
 					, myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
 				.done(function (defects, features, incidents) {
 				    var getCount = function (itemType) {
-				        if (itemType && itemType[0] && itemType[0].metadata) {
-				            return itemType[0].metadata.total_count;
+				        if (itemType && itemType.metadata) {
+				            return itemType.metadata.total_count;
 				        } else {
 				            return 0;
 				        }
@@ -258,25 +267,29 @@
         },
 
         getCurrentUserData: function () {
-            return $.ajax(this.getApiUrl('users/me', '&extend=all'), {});
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users/me', '&extend=all'), {});
         },
 
         getAllUsersData: function () {
-            return $.ajax(this.getApiUrl('users', '&include_inactive=false&extend=all'), {});
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users', '&include_inactive=false&extend=all'), {});
         },
 
         getItemDetailsForUser: function (itemType, userId, projectId, releaseId) {
 
+            
             var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&columns=project,release&user_id=' + userId);
 
             if (!(projectId === 'nofilter'))//if the ID isn't nofilter
                 if (!(typeof projectId == 'undefined'))//if the ID isn't undefined
-                    target = target + '&project_id=' + projectId;
+                    if(!(projectId === '0')) //if the ID isnt 0 for "All Projects"
+                        target = target + '&project_id=' + projectId;
             if (!(releaseId === 'nofilter'))//if the ID isn't nofilter
                 if (!(typeof releaseId == 'undefined'))//if the ID isn't undefined
-                    target = target + '&release_id=' + releaseId;
+                    if(!(releaseId === '0')) //if the ID isnt 0 for "All Releases"
+                         target = target + '&release_id=' + releaseId;
+            window.console.log("Inside getitems details");
 
-            return $.ajax(target, {});
+            return window.myOnTimeTeam.makeApiCall(target);
         },
 
         getApiUrl: function (route, queryString) {
@@ -284,18 +297,53 @@
         },
 
         getProjects: function () {
-            return $.ajax(this.getApiUrl('projects', ''), {});
+            
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('projects', ''), {});
         },
 
         getReleases: function () {
-            return $.ajax(this.getApiUrl('releases', ''), {});
-        }
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', ''), {});
+        },
 
        
+        makeApiCall: function (url)
+        {
+            var deferredResponse = $.Deferred();
+            window.myOnTimeTeam.apiQueue.push({
+                url: url,
+                deferredResponse: deferredResponse
+            });
 
+            
+            window.console.log("queue push: " + url);
+
+            return deferredResponse;
+        },
+
+        processApiQueue: function(){
+            var queue = window.myOnTimeTeam.apiQueue;
+
+            if (!queue || !queue.length) return;
+
+            
+            var request = queue.shift();
+
+            window.console.log("ajax " + request.url);
+            $.ajax(request.url, {}).done(function (response){
+                request.deferredResponse.resolve(response);
+            });
+
+        },
+
+        apiQueue: []
     };
 
-   
+    window.setInterval(function () {
+        myOnTimeTeam.processApiQueue();
+    }, 500);
+    window.setInterval(function () {
+        window.myOnTimeTeam.refreshData();
+    }, 1140000);
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
