@@ -16,7 +16,7 @@
         };
         this.show = function () {
             var hiddenUsers = localStorage.getItem('hiddenUsers').split(','),
-				that = this;
+                that = this;
             hiddenUsers = $.grep(hiddenUsers, function (item) {
                 return item !== that.id;
             });
@@ -98,8 +98,8 @@
                 viewModel.releases = ko.mapping.fromJS(releaseArray);
 
                 var users = usersResponse.data,
-					userModels = [],
-					usersWaitingForData = [];
+                    userModels = [],
+                    usersWaitingForData = [];
 
                 viewModel.sortBy = ko.observable(window.localStorage.getItem('sort') || "name");
                 viewModel.showHidden = ko.observable(localStorage.getItem('showHidden') === "true");
@@ -113,10 +113,10 @@
                 viewModel.users = ko.observableArray(userModels);
                 viewModel.usersSorted = ko.computed(function () {
                     var sortType = this.sortBy(),
-						sortFn,
-						visibleArray = $.grep(this.users(), function (user) {
-						    return user.visible();
-						});
+                        sortFn,
+                        visibleArray = $.grep(this.users(), function (user) {
+                            return user.visible();
+                        });
 
                     switch (sortType) {
                         case 'name':
@@ -124,8 +124,8 @@
                         case 'work':
                             sortFn = function (a, b) {
                                 return a.workRemainingMinutes() > b.workRemainingMinutes() ? -1 :
-									a.workRemainingMinutes() < b.workRemainingMinutes() ? 1 :
-									0;
+                                    a.workRemainingMinutes() < b.workRemainingMinutes() ? 1 :
+                                    0;
                             };
                             break;
                         case 'defects':
@@ -134,8 +134,8 @@
                         case 'items':
                             sortFn = function (a, b) {
                                 return a.getCount(sortType)() > b.getCount(sortType)() ? -1 :
-									a.getCount(sortType)() < b.getCount(sortType)() ? 1 :
-									0;
+                                    a.getCount(sortType)() < b.getCount(sortType)() ? 1 :
+                                    0;
                             };
                             break;
                     }
@@ -214,55 +214,55 @@
             }
 
             this.getUserData(user, projectFilter ,releaseFilter)
-				.done(function () {
-				    setTimeout(function () {
-				        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
-				    }, 333);
-				})
-				.fail(function () {
-				    //Something failed. We're probably making too many requests at a time. Add
-				    //this user back to the list, wait a second, then start the requests again.
-				    usersToHandle.unshift(user);
-				    setTimeout(function () {
-				        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
-				    }, 1000);
-				});
+                .done(function () {
+                    setTimeout(function () {
+                        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
+                    }, 333);
+                })
+                .fail(function () {
+                    //Something failed. We're probably making too many requests at a time. Add
+                    //this user back to the list, wait a second, then start the requests again.
+                    usersToHandle.unshift(user);
+                    setTimeout(function () {
+                        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
+                    }, 1000);
+                });
         },
 
         getUserData: function (user, projectFilter, releaseFilter) {
             return $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, projectFilter, releaseFilter)
-					, myOnTimeTeam.getItemDetailsForUser('features', user.id, projectFilter, releaseFilter)
-					, myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
-				.done(function (defects, features, incidents) {
-				    var getCount = function (itemType) {
-				        if (itemType && itemType.metadata) {
-				            return itemType.metadata.total_count;
-				        } else {
-				            return 0;
-				        }
-				    };
+                    , myOnTimeTeam.getItemDetailsForUser('features', user.id, projectFilter, releaseFilter)
+                    , myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
+                .done(function (defects, features, incidents) {
+                    var getCount = function (itemType) {
+                        if (itemType && itemType.metadata) {
+                            return itemType.metadata.total_count;
+                        } else {
+                            return 0;
+                        }
+                    };
 
-				    var getWorkRemainingMinutes = function (itemType) {
-				        if (itemType && itemType[0] && itemType[0].metadata) {
-				            return itemType[0].metadata.minutes_remaining;
-				        } else {
-				            return 0;
-				        }
-				    };
+                    var getWorkRemainingMinutes = function (itemType) {
+                        if (itemType && itemType[0] && itemType[0].metadata) {
+                            return itemType[0].metadata.minutes_remaining;
+                        } else {
+                            return 0;
+                        }
+                    };
 
-				    // Update the data for this user in the viewModel knockout object
-				    user.defectsCount(getCount(defects));
-				    user.featuresCount(getCount(features));
-				    user.incidentsCount(getCount(incidents));
-				    user.workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
-						+ getWorkRemainingMinutes(features)
-						+ getWorkRemainingMinutes(incidents))));
-				    user.dataLoaded(true);
-				})
-				.fail(function () {
-				})
-				.always(function () {
-				});
+                    // Update the data for this user in the viewModel knockout object
+                    user.defectsCount(getCount(defects));
+                    user.featuresCount(getCount(features));
+                    user.incidentsCount(getCount(incidents));
+                    user.workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
+                        + getWorkRemainingMinutes(features)
+                        + getWorkRemainingMinutes(incidents))));
+                    user.dataLoaded(true);
+                })
+                .fail(function () {
+                })
+                .always(function () {
+                });
         },
 
         getCurrentUserData: function () {

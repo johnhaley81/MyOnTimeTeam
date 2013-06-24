@@ -90,15 +90,19 @@ namespace MyOnTimeTeam.Controllers
 					return Redirect("/accounts/tokenRedirect");
 				}
 			}
-			catch (Exception)
-			{
-
+			catch (WebException)
+			{                
+                return Redirect("LoginFailed");
 			}
-			return null;
 		}
 
-        public ActionResult tokenRedirect()
+        public ActionResult LoginFailed()
         {
+            return View();
+        }
+
+        public ActionResult tokenRedirect()
+        {            
             return View();
         }
 

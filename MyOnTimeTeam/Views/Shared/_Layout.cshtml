@@ -146,7 +146,7 @@
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
         {
             <div class="welcome">
-                <p>Please log in to My OnTime Team.</p>
+                <p>@ViewBag.message</p>
             </div>
         }
 
