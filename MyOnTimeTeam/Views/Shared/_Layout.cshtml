@@ -167,37 +167,36 @@
                     <a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
                 }
             </div>
-        </div>
 
-        <div class="row-fluid">
+            <div class="row-fluid">
             <div class="span7">
                 <div class="row-fluid">
                     
                     <div class="span4">
                         <label><!-- ko text: itemTypes()[0] --><!-- /ko --></label>
-                        <select>
+                        <select id="defectselector">
                             <option filterId ="0">None</option>
                             <!-- ko foreach: itemFilters()[0] -->
-                            <option data-bind = "attr: {'filterId' : id }"><!-- ko text: name --><!-- /ko --></option>
+                            <option data-bind = "attr: { 'filterid': id }"><!-- ko text: name --><!-- /ko --></option>
                             <!-- /ko -->
                         </select>
                     </div>
                     
                     <div class="span4">
                         <label><!-- ko text: itemTypes()[1] --><!-- /ko --></label>
-                        <select>
+                        <select id="featureselector">
                             <option filterId ="0">None</option>
                             <!-- ko foreach: itemFilters()[1] -->
-                            <option data-bind = "attr: { 'filterId': id }"><!-- ko text: name --><!-- /ko --></option>
+                            <option data-bind = "attr: { 'filterid': id }"><!-- ko text: name --><!-- /ko --></option>
                             <!-- /ko -->
                         </select>
                     </div>
                     <div class="span4">
                         <label><!-- ko text: itemTypes()[2] --><!-- /ko --></label>
-                        <select>
+                        <select id="incidentselector">
                             <option filterId ="0">None</option>
                             <!-- ko foreach: itemFilters()[2] -->
-                            <option data-bind = "attr: { 'filterId': id }"><!-- ko text: name --><!-- /ko --></option>
+                            <option data-bind = "attr: { 'filterid': id }"><!-- ko text: name --><!-- /ko --></option>
                             <!-- /ko -->
                         </select>
                     </div>
@@ -207,23 +206,28 @@
                 <div class="row-fluid">
                     <div class="span6">
                         <label>Projects</label>
-                        <select>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
+                        <select onchange="$('[data-filtervalue]').click()">
+                            <option data-filtervalue="0">All Projects</option>
+                            <!-- ko foreach: projects -->
+                            <option data-bind="attr: { 'data-filtervalue': value }"><!-- ko text: name--><!-- /ko--></option>
+                            <!--/ko-->
                         </select>
                     </div>
                     <div class="span6">
                         <label>Releases</label>
                         <select>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
+                            <option data-filtervalue="0">All Releases</option>
+                            <!-- ko foreach: releases -->
+                            <option data-bind="attr: { 'releaseData-filtervalue': value }"><!-- ko text: name--><!-- /ko--></option>
+                            <!--/ko-->
                         </select>
                     </div>
                 </div>
             </div>
         </div>
+        </div>
+
+        
         @RenderBody()
         @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
@@ -247,7 +251,12 @@
 
                     document.location = "";
                 });
+
+
             }
+
+          
+           
         </script>
     </div>
 </body>

@@ -193,7 +193,7 @@
                 $('[data-filtervalue]').unbind('click');
 
                 $('[data-filtervalue]').click(function () {
-                    var newFilter = $(this).attr('data-filtervalue');
+                    var newFilter = $('option:selected', this).attr('data-filtervalue');
                     localStorage.setItem('filter', newFilter);
                     viewModel.filterProjectsBy(newFilter);
                     $('[data-filtervalue] .icon-ok').addClass('hide');
