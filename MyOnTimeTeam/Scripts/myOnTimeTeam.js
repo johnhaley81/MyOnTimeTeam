@@ -243,8 +243,8 @@
                     };
 
                     var getWorkRemainingMinutes = function (itemType) {
-                        if (itemType && itemType[0] && itemType[0].metadata) {
-                            return itemType[0].metadata.minutes_remaining;
+                        if (itemType && itemType.metadata) {
+                            return itemType.metadata.minutes_remaining;
                         } else {
                             return 0;
                         }
