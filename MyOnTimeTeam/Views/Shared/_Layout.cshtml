@@ -25,6 +25,10 @@
         if (window.localStorage.getItem('showHidden') === null) {
             window.localStorage.setItem('showHidden', false);
         }
+
+        if (window.localStorage.getItem('showInactive') === null) {
+            window.localStorage.setItem('showInactive', false);
+        }
     </script>
 </head>
 <body>
@@ -67,24 +71,33 @@
                             <li class="dropdown-submenu pull-left">
                                 <a href="#">Filter by</a>
                                 <ul class="dropdown-menu">
-                                    <li><span style="font-weight: bold; margin-left:0.7em">Projects</span></li>
+                                    <li><span style="font-weight: bold; margin-left: 0.7em">Projects</span></li>
                                     <li data-filtervalue="0"><a href="#">All Projects<span class="hide icon icon-ok"></span></a></li>
-                                         <!-- ko foreach: projects -->
-                                            <li data-bind="attr: {'data-filtervalue': value}">
-                                                <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
-                                            </li>
-                                        <!-- /ko -->
+                                    <!-- ko foreach: projects -->
+                                    <li data-bind="attr: { 'data-filtervalue': value }">
+                                        <a href="#">
+                                            <!--ko text: name-->
+                                            <!--/ko-->
+                                            <span class="hide icon icon-ok"></span></a>
+                                    </li>
+                                    <!-- /ko -->
                                     <li class="divider"></li>
-                                    <li><span style="font-weight: bold; margin-left:0.7em">Releases</span></li>
-                                    <li  releaseData-filtervalue="0"><a href="#">All Releases<span class="hide icon icon-ok"></span></a></li>
+                                    <li><span style="font-weight: bold; margin-left: 0.7em">Releases</span></li>
+                                    <li releasedata-filtervalue="0"><a href="#">All Releases<span class="hide icon icon-ok"></span></a></li>
                                     <!-- ko foreach: releases -->
-                                             <li data-bind="attr: { 'releaseData-filtervalue': value }">
-                                                <a href="#"><!--ko text: name--><!--/ko--><span class="hide icon icon-ok"></span></a>
-                                            </li>
+                                    <li data-bind="attr: { 'releaseData-filtervalue': value }">
+                                        <a href="#">
+                                            <!--ko text: name-->
+                                            <!--/ko-->
+                                            <span class="hide icon icon-ok"></span></a>
+                                    </li>
                                     <!-- /ko -->
                                 </ul>
                             </li>
                             <li id="showHidden"><a href="#">Show Hidden Users
+                                    <span class="hide icon icon-ok"></span>
+                            </a></li>
+                            <li id="showInactive"><a href="#">Show Inactive Users
                                     <span class="hide icon icon-ok"></span>
                             </a></li>
                             <li class="divider"></li>
@@ -93,6 +106,8 @@
                             </li>
                         </ul>
                     </div>
+                    
+                  
                     <script>
                         window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
                         window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
@@ -103,42 +118,110 @@
                         });
 
 
-                          
-                            var viewModel = window.myOnTimeTeam.refreshData();
 
-                                
-
-                                var sort = window.localStorage.getItem('sort') || 'name'; //name, work
-                                $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
-                                $('[data-sortValue]').click(function () {
-                                    var newSort = $(this).attr('data-sortValue');
-                                    localStorage.setItem('sort', newSort);
-                                    viewModel.sortBy(newSort);
-                                    $('[data-sortValue] .icon-ok').addClass('hide');
-                                    $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
-                                });
+                        var viewModel = window.myOnTimeTeam.refreshData();
 
 
 
+                        var sort = window.localStorage.getItem('sort') || 'name'; //name, work
+                        $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
+                        $('[data-sortValue]').click(function () {
+                            var newSort = $(this).attr('data-sortValue');
+                            localStorage.setItem('sort', newSort);
+                            viewModel.sortBy(newSort);
+                            $('[data-sortValue] .icon-ok').addClass('hide');
+                            $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
+                        });
 
-                                $('#showHidden .icon-ok').toggleClass('hide',
-                                    localStorage.getItem("showHidden") !== "true"
-                                );
-                                $('#showHidden a').click(function () {
-                                    var newShow = localStorage.getItem("showHidden") !== "true";
-                                    $('#showHidden .icon-ok').toggleClass('hide', !newShow)
-                                    localStorage.setItem("showHidden", newShow);
-                                    viewModel.showHidden(newShow);
-                                });
-                           
 
-                        
+
+
+                        $('#showHidden .icon-ok').toggleClass('hide',
+                            localStorage.getItem("showHidden") !== "true"
+                        );
+                        $('#showHidden a').click(function () {
+                            var newShow = localStorage.getItem("showHidden") !== "true";
+                            $('#showHidden .icon-ok').toggleClass('hide', !newShow)
+                            localStorage.setItem("showHidden", newShow);
+                            viewModel.showHidden(newShow);
+                            window.location.reload();
+                        });
+
+                        $('#showInactive .icon-ok').toggleClass('hide',
+                                  localStorage.getItem("showInactive") !== "true"
+                              );
+                        $('#showInactive a').click(function () {
+                            var inactiveShow = localStorage.getItem("showInactive") !== "true";
+                            $('#showInactive .icon-ok').toggleClass('hide', !inactiveShow)
+                            localStorage.setItem("showInactive", inactiveShow);
+                            viewModel.showInactive(inactiveShow);
+                            window.location.reload();
+                        });
+
+
+
                     </script>
                 }
                 else
                 {
                     <a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
                 }
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span7">
+                <div class="row-fluid">
+                    
+                    <div class="span4">
+                        <label><!-- ko text: itemTypes()[0] --><!-- /ko --></label>
+                        <select>
+                            <option filterId ="0">None</option>
+                            <!-- ko foreach: itemFilters()[0] -->
+                            <option data-bind = "attr: {'filterId' : id }"><!-- ko text: name --><!-- /ko --></option>
+                            <!-- /ko -->
+                        </select>
+                    </div>
+                    
+                    <div class="span4">
+                        <label><!-- ko text: itemTypes()[1] --><!-- /ko --></label>
+                        <select>
+                            <option filterId ="0">None</option>
+                            <!-- ko foreach: itemFilters()[1] -->
+                            <option data-bind = "attr: { 'filterId': id }"><!-- ko text: name --><!-- /ko --></option>
+                            <!-- /ko -->
+                        </select>
+                    </div>
+                    <div class="span4">
+                        <label><!-- ko text: itemTypes()[2] --><!-- /ko --></label>
+                        <select>
+                            <option filterId ="0">None</option>
+                            <!-- ko foreach: itemFilters()[2] -->
+                            <option data-bind = "attr: { 'filterId': id }"><!-- ko text: name --><!-- /ko --></option>
+                            <!-- /ko -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="span5">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label>Projects</label>
+                        <select>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                        </select>
+                    </div>
+                    <div class="span6">
+                        <label>Releases</label>
+                        <select>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
         @RenderBody()
@@ -155,16 +238,16 @@
             if ($('#loginButton')) {
                 $('#loginButton').click(function () {
                     $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
-                    });
-                }
-                if ($('#logoutButton')) {
-                    $('#logoutButton').click(function () {
-                        document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
-                        document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                });
+            }
+            if ($('#logoutButton')) {
+                $('#logoutButton').click(function () {
+                    document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                    document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
 
-                        document.location = "";
-                    });
-                }
+                    document.location = "";
+                });
+            }
         </script>
     </div>
 </body>

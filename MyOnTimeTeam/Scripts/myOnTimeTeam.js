@@ -64,7 +64,7 @@
         refreshData: function () {
             var viewModel = {};
 
-            $.when(this.getAllUsersData(), this.getProjects(), this.getReleases()).done(function (usersResponse, projectsResponse, releasesResponse)
+            $.when(this.getAllUsersData(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents')).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse)
             {
                 if (!usersResponse || !usersResponse.data)
                     return;
@@ -73,8 +73,49 @@
                     return;
 
                 if(!releasesResponse ||  !releasesResponse.data)
-                return;
-                 
+                    return;
+
+                if (!defectFilterResponse || !defectFilterResponse.data)
+                    return;
+               
+                if (!featureFilterResponse || !featureFilterResponse.data)
+                    return;
+                
+                if (!incidentFilterResponse || !incidentFilterResponse.data)
+                    return;
+                
+
+                var defectFilterArray = [];
+                var featureFilterArray = [];
+                var incidentFilterArray = [];
+
+                var nameArray = [];
+
+                nameArray.push(defectFilterResponse.data[0].filter_type);
+                nameArray.push(featureFilterResponse.data[0].filter_type);
+                nameArray.push(incidentFilterResponse.data[0].filter_type);
+                
+
+                for (var i = 0 ; i < defectFilterResponse.data.length ; i++)
+                    defectFilterArray.push(defectFilterResponse.data[i]);
+
+                for (var i = 0 ; i < featureFilterResponse.data.length ; i++)
+                    featureFilterArray.push(featureFilterResponse.data[i]);
+
+                for (var i = 0 ; i < incidentFilterResponse.data.length ; i++)
+                    incidentFilterArray.push(incidentFilterResponse.data[i]);
+
+                var itemFilters = [];
+
+                itemFilters.push(defectFilterArray);
+                itemFilters.push(featureFilterArray);
+                itemFilters.push(incidentFilterArray);
+
+                
+
+                viewModel.itemTypes = ko.mapping.fromJS(nameArray);
+
+                viewModel.itemFilters = ko.mapping.fromJS(itemFilters);
 
                 var projectArray = [];
 
@@ -103,6 +144,7 @@
 
                 viewModel.sortBy = ko.observable(window.localStorage.getItem('sort') || "name");
                 viewModel.showHidden = ko.observable(localStorage.getItem('showHidden') === "true");
+                viewModel.showInactive = ko.observable(localStorage.getItem('showInactive') === "true");
 
                 for (var i = 0, l = users.length; i < l; i++) {
                     userModels.push(new User(users[i], viewModel.showHidden));
@@ -205,7 +247,8 @@
             }
         },
 
-        getNextUsersData: function (userswaiting, projectFilter, releaseFilter) {
+        getNextUsersData: function (userswaiting, projectFilter, releaseFilter)
+        {
             var user = (usersToHandle || []).shift();
             if (!user) {
                 usersToHandle = null;	//The last user has been handled, clear out the list
@@ -213,21 +256,35 @@
                 return;
             }
 
-            this.getUserData(user, projectFilter ,releaseFilter)
-                .done(function () {
-                    setTimeout(function () {
-                        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
-                    }, 333);
-                })
-                .fail(function () {
-                    //Something failed. We're probably making too many requests at a time. Add
-                    //this user back to the list, wait a second, then start the requests again.
-                    usersToHandle.unshift(user);
-                    setTimeout(function () {
-                        myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
-                    }, 1000);
-                });
+            var hiddenUsersArray = window.localStorage.hiddenUsers.split(',');
+            var found = false;
+
+            for (var i = 0; i < hiddenUsersArray.length ; i++)
+            {
+                if (hiddenUsersArray[i] === user.id.toString())
+                    found = true;
+            }
+            if (!found || viewModel.showHidden()) {
+                this.getUserData(user, projectFilter, releaseFilter)
+                    .done(function () {
+                        setTimeout(function () {
+                            myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
+                        }, 333);
+                    })
+                    .fail(function () {
+                        //Something failed. We're probably making too many requests at a time. Add
+                        //this user back to the list, wait a second, then start the requests again.
+                        usersToHandle.unshift(user);
+                        setTimeout(function () {
+                            myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
+                        }, 1000);
+                    });
+            }
         },
+
+        
+
+        
 
         getUserData: function (user, projectFilter, releaseFilter) {
             return $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, projectFilter, releaseFilter)
@@ -270,7 +327,12 @@
         },
 
         getAllUsersData: function () {
-            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users', '&include_inactive=false&extend=all'), {});
+            var querystring = '&extend=all';
+            if (window.localStorage.getItem('showInactive') === 'false')
+                querystring = '&include_inactive=false' + querystring;
+
+
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users', querystring), {});
         },
 
         getItemDetailsForUser: function (itemType, userId, projectId, releaseId) {
@@ -299,6 +361,12 @@
             
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('projects', ''), {});
         },
+
+        getFilters: function (itemType) {
+            var querystring = "&type=" + itemType;
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('filters', querystring), {});
+        },
+        
 
         getReleases: function () {
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', ''), {});
@@ -339,9 +407,7 @@
     window.setInterval(function () {
         myOnTimeTeam.processApiQueue();
     }, 175);
-    window.setInterval(function () {
-        window.location.reload();
-    }, 1140000);
+  
    
 
     var recursivepush = function (root, projarray, indentLevel) {
