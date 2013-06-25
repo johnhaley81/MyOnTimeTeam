@@ -29,7 +29,7 @@ namespace MyOnTimeTeam.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-                if (!model.OnTimeUrl.Contains("https://") || !model.OnTimeUrl.Contains("http://"))
+                if (!model.OnTimeUrl.Contains("https://") && !model.OnTimeUrl.Contains("http://"))
                     model.OnTimeUrl = "https://" + model.OnTimeUrl;
                 
                 var url = "{url}/auth?response_type=code&client_id={ontime_client_id}&redirect_uri={redirect_url}&state={state}";
