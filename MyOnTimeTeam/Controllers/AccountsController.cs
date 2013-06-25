@@ -29,7 +29,10 @@ namespace MyOnTimeTeam.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var url = "{url}/auth?response_type=code&client_id={ontime_client_id}&redirect_uri={redirect_url}&state={state}";
+                if (!model.OnTimeUrl.Contains("https://") || !model.OnTimeUrl.Contains("http://"))
+                    model.OnTimeUrl = "https://" + model.OnTimeUrl;
+                
+                var url = "{url}/auth?response_type=code&client_id={ontime_client_id}&redirect_uri={redirect_url}&state={state}";
 				url = url.Replace("{url}", model.OnTimeUrl)
 					.Replace("{ontime_client_id}", ConfigurationManager.AppSettings["OnTimeClientId"])
 					.Replace("{redirect_url}", HttpUtility.UrlEncode(getRedirectUri()))
