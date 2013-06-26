@@ -825,3 +825,13 @@ tr.pager td {
 
 @media (max-width: 479px) {
 }
+
+
+/* Filter bar*/
+.filterBar{
+    margin-top: 0em;
+    text-align: center;
+    background-color: #6BC466;
+    border-radius: 1em;
+    padding-top: 0.25em;
+}
