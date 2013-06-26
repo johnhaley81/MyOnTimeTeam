@@ -61,98 +61,137 @@
     //already being processed.
 
     window.myOnTimeTeam = {
-        refreshData: function () {
-            var viewModel = {};
 
-            $.when(this.getAllUsersData(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents')).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse)
-            {
+        initializeViewModel: function (viewModel) {
+            viewModel.defectId = ko.observable(0);
+            viewModel.featureId = ko.observable(0);
+            viewModel.incidentId = ko.observable(0);
+            viewModel.projectId = ko.observable(0);
+            viewModel.releaseId = ko.observable(0);
+
+            return viewModel;
+        },
+
+        populateItemNames: function (defects, features, incidents) {
+            var name = [];
+            name.push(defects.data[0].filter_type);
+            name.push(features.data[0].filter_type);
+            name.push(incidents.data[0].filter_type);
+
+            return name;
+        },
+
+        populateFilterArray: function (itemResponse) {
+            itemArray = [];
+            for (var i = 0 ; i < itemResponse.data.length ; i++)
+                itemArray.push(itemResponse.data[i]);
+
+            return itemArray;
+        },
+
+        populateItemFilterArray: function (defectArray, featureArray, incidentArray) {
+
+            var itemArray = [];
+
+            itemArray.push(defectArray);
+            itemArray.push(featureArray);
+            itemArray.push(incidentArray);
+
+            return itemArray;
+        },
+
+        populateDesignArray: function (designResponse, name) {
+            var designArray = [];
+
+
+            var allDesign = {
+                name: "All " + name,
+                id: 0
+            };
+            designArray.push(allDesign);
+
+            for (var i = 0 ; i < designResponse.data.length ; i++) {
+                recursivepush(designResponse.data[i], designArray, 0);
+
+            }
+
+            return designArray;
+        },
+
+        populateUserModels: function (userResponse, viewModel) {
+
+            var userModels = [];
+
+            for (var i = 0, l = userResponse.data.length; i < l; i++) {
+                userModels.push(new User(userResponse.data[i], viewModel.showHidden));
+            }
+
+
+            return userModels;
+
+        },
+
+
+        refreshData: function () {
+            var viewModel = {}
+            viewModel = window.myOnTimeTeam.initializeViewModel(viewModel);
+
+            $.when(this.getUsersList(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents')).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse) {
                 if (!usersResponse || !usersResponse.data)
                     return;
 
                 if (!projectsResponse || !projectsResponse.data)
                     return;
 
-                if(!releasesResponse ||  !releasesResponse.data)
+                if (!releasesResponse || !releasesResponse.data)
                     return;
 
                 if (!defectFilterResponse || !defectFilterResponse.data)
                     return;
-               
+
                 if (!featureFilterResponse || !featureFilterResponse.data)
                     return;
-                
+
                 if (!incidentFilterResponse || !incidentFilterResponse.data)
                     return;
-                
 
-                var defectFilterArray = [];
-                var featureFilterArray = [];
-                var incidentFilterArray = [];
 
-                var nameArray = [];
 
-                nameArray.push(defectFilterResponse.data[0].filter_type);
-                nameArray.push(featureFilterResponse.data[0].filter_type);
-                nameArray.push(incidentFilterResponse.data[0].filter_type);
-                
 
-                for (var i = 0 ; i < defectFilterResponse.data.length ; i++)
-                    defectFilterArray.push(defectFilterResponse.data[i]);
+                var nameArray = window.myOnTimeTeam.populateItemNames(defectFilterResponse, featureFilterResponse, incidentFilterResponse);
+                var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse);
+                var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse);
+                var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse);
+                var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray);
+                var projectArray = window.myOnTimeTeam.populateDesignArray(projectsResponse, 'Projects');
+                var releaseArray = window.myOnTimeTeam.populateDesignArray(releasesResponse, 'Releases');
 
-                for (var i = 0 ; i < featureFilterResponse.data.length ; i++)
-                    featureFilterArray.push(featureFilterResponse.data[i]);
 
-                for (var i = 0 ; i < incidentFilterResponse.data.length ; i++)
-                    incidentFilterArray.push(incidentFilterResponse.data[i]);
 
-                var itemFilters = [];
-
-                itemFilters.push(defectFilterArray);
-                itemFilters.push(featureFilterArray);
-                itemFilters.push(incidentFilterArray);
-
-                
 
                 viewModel.itemTypes = ko.mapping.fromJS(nameArray);
-
                 viewModel.itemFilters = ko.mapping.fromJS(itemFilters);
-
-                var projectArray = [];
-
-                for (var i = 0 ; i < projectsResponse.data.length ; i++) {
-                    recursivepush(projectsResponse.data[i], projectArray, 0);
-
-                }
-
-
                 viewModel.projects = ko.mapping.fromJS(projectArray);
-
-                viewModel.filterProjectsBy = ko.observable(window.localStorage.getItem('filter') || "nofilter");
-
-                var releaseArray = [];
-
-                for (var i = 0 ; i < releasesResponse.data.length ; i++)
-                {
-                    recursivepush(releasesResponse.data[i], releaseArray, 0);
-                }
-
                 viewModel.releases = ko.mapping.fromJS(releaseArray);
 
-                var users = usersResponse.data,
-                    userModels = [],
-                    usersWaitingForData = [];
+
+
+
+
 
                 viewModel.sortBy = ko.observable(window.localStorage.getItem('sort') || "name");
                 viewModel.showHidden = ko.observable(localStorage.getItem('showHidden') === "true");
                 viewModel.showInactive = ko.observable(localStorage.getItem('showInactive') === "true");
-
-                for (var i = 0, l = users.length; i < l; i++) {
-                    userModels.push(new User(users[i], viewModel.showHidden));
-                }
-
+                viewModel.filterProjectsBy = ko.observable(window.localStorage.getItem('filter') || "nofilter");
                 viewModel.filterReleasesBy = ko.observable(window.localStorage.getItem('releasefilter') || "nofilter");
 
+                var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
                 viewModel.users = ko.observableArray(userModels);
+
+
+
+
+
                 viewModel.usersSorted = ko.computed(function () {
                     var sortType = this.sortBy(),
                         sortFn,
@@ -183,9 +222,28 @@
                     }
                     return visibleArray.sort(sortFn);
                 }, viewModel);
-                ko.applyBindings(viewModel);
+                viewModel.updateProject = ko.computed(function () {
+                    this.projectId();
+                    var newFilter = this.projectId();
+                    localStorage.setItem('filter', newFilter);
+                    viewModel.filterProjectsBy(newFilter);
 
-                var filtersort = window.localStorage.getItem('filter');
+
+                }, viewModel);
+
+
+
+
+
+
+
+
+
+
+
+
+                /*var filtersort = window.localStorage.getItem('filter');
+                var releasefiltersort = window.localStorage.getItem('releasefilter');
 
                 if (filtersort)
                     $('[data-filtervalue="' + filtersort + '"] .icon-ok').removeClass('hide');
@@ -200,38 +258,42 @@
                     $('[data-filtervalue="' + newFilter + '"] .icon-ok').removeClass('hide');
                     window.location.reload();
                    
-                });
+                });*/
 
-                var releasefiltersort = window.localStorage.getItem('releasefilter');
 
-                if (releasefiltersort)
-                    $('[releaseData-filtervalue="' + releasefiltersort + '"] .icon-ok').removeClass('hide');
 
-                $('[releaseData-filtervalue]').unbind('click');
 
-                $('[releaseData-filtervalue]').click(function () {
-                    var newReleaseFilter = $(this).attr('releaseData-filtervalue');
-                    localStorage.setItem('releasefilter', newReleaseFilter);
-                    viewModel.filterReleasesBy(newReleaseFilter);
-                    $('[releaseData-filtervalue] .icon-ok').addClass('hide');
-                    $('[releaseData-filtervalue="' + newReleaseFilter + '"] .icon-ok').removeClass('hide');
-                    window.location.reload();
-                });
+
+                //if (releasefiltersort)
+                //    $('[releaseData-filtervalue="' + releasefiltersort + '"] .icon-ok').removeClass('hide');
+
+                //$('[releaseData-filtervalue]').unbind('click');
+
+                //$('[releaseData-filtervalue]').click(function () {
+                //    var newReleaseFilter = $(this).attr('releaseData-filtervalue');
+                //    localStorage.setItem('releasefilter', newReleaseFilter);
+                //    viewModel.filterReleasesBy(newReleaseFilter);
+                //    $('[releaseData-filtervalue] .icon-ok').addClass('hide');
+                //    $('[releaseData-filtervalue="' + newReleaseFilter + '"] .icon-ok').removeClass('hide');
+                //    window.location.reload();
+                //});
                 // now copy the users from the view model into the array of users waiting for data so we can loop over them
                 // without disturbing the original view model
-             
 
-                $.when(viewModel.filterProjectsBy(), viewModel.filterReleasesBy()).done(function (filterprojects, filterreleases)
-                {
-                    myOnTimeTeam.getNextUsersData(usersWaitingForData, filterprojects, filterreleases);
 
-                    for (var i = 0, l = viewModel.users().length; i < l; i++) {
-                        var user = viewModel.users()[i];
-                        if (user.visible())
-                            myOnTimeTeam.addUserToHandle(viewModel.users()[i], filterprojects, filterreleases);
-                    }
-                    
-                });
+                //$.when(viewModel.filterProjectsBy(), viewModel.filterReleasesBy()).done(function (filterprojects, filterreleases)
+                //{
+                myOnTimeTeam.getNextUsersData(viewModel.users(),viewModel.filterProjectsBy(), viewModel.filterReleasesBy());
+
+                for (var i = 0, l = viewModel.users().length; i < l; i++) {
+                    var user = viewModel.users()[i];
+                    if (user.visible())
+                        myOnTimeTeam.addUserToHandle(viewModel.users()[i], viewModel.filterProjectsBy(), viewModel.filterReleasesBy());
+                }
+
+                //});
+
+                ko.applyBindings(viewModel);
             });
 
             return viewModel;
@@ -240,93 +302,85 @@
         addUserToHandle: function (user, filterprojects, filterreleases) {
             if (usersToHandle === null) {
                 usersToHandle = [user];
-                this.getNextUsersData(null, filterprojects, filterreleases);
+                this.getNextUsersData(filterprojects, filterreleases);
             }
             else {
                 usersToHandle.push(user);
             }
         },
 
-        getNextUsersData: function (userswaiting, projectFilter, releaseFilter)
-        {
-            var user = (usersToHandle || []).shift();
-            if (!user) {
-                usersToHandle = null;	//The last user has been handled, clear out the list
-                //so we know to start over with the next user.
+        getNextUsersData: function (usersArray, projectFilter, releaseFilter) {
+
+            if (!usersArray)
                 return;
-            }
+
+
 
             var hiddenUsersArray = window.localStorage.hiddenUsers.split(',');
             var found = false;
 
-            for (var i = 0; i < hiddenUsersArray.length ; i++)
-            {
-                if (hiddenUsersArray[i] === user.id.toString())
-                    found = true;
+
+            for (var i = 0; i < usersArray.length ; i++) {
+                found = false;
+                for (var j = 0; j < hiddenUsersArray.length ; j++) {
+                    if (hiddenUsersArray[j] === usersArray[i].id.toString())
+                        found = true;
+
+                    if (!found || viewModel.showHidden()) {
+                        this.getUserData(usersArray[i], projectFilter, releaseFilter);
+                    }
+                }
+
             }
-            if (!found || viewModel.showHidden()) {
-                this.getUserData(user, projectFilter, releaseFilter)
-                    .done(function () {
-                        setTimeout(function () {
-                            myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
-                        }, 333);
-                    })
-                    .fail(function () {
-                        //Something failed. We're probably making too many requests at a time. Add
-                        //this user back to the list, wait a second, then start the requests again.
-                        usersToHandle.unshift(user);
-                        setTimeout(function () {
-                            myOnTimeTeam.getNextUsersData(null, projectFilter, releaseFilter);
-                        }, 1000);
-                    });
-            }
+
+
         },
 
-        
 
-        
+
+
 
         getUserData: function (user, projectFilter, releaseFilter) {
             return $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, projectFilter, releaseFilter)
-                    , myOnTimeTeam.getItemDetailsForUser('features', user.id, projectFilter, releaseFilter)
-                    , myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
-                .done(function (defects, features, incidents) {
-                    var getCount = function (itemType) {
-                        if (itemType && itemType.metadata) {
-                            return itemType.metadata.total_count;
-                        } else {
-                            return 0;
-                        }
-                    };
+                , myOnTimeTeam.getItemDetailsForUser('features', user.id, projectFilter, releaseFilter)
+                , myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
+            .done(function (defects, features, incidents) {
+                var getCount = function (itemType) {
+                    if (itemType && itemType.metadata) {
+                        return itemType.metadata.total_count;
+                    } else {
+                        return 0;
+                    }
+                };
 
-                    var getWorkRemainingMinutes = function (itemType) {
-                        if (itemType && itemType.metadata) {
-                            return itemType.metadata.minutes_remaining;
-                        } else {
-                            return 0;
-                        }
-                    };
+                var getWorkRemainingMinutes = function (itemType) {
+                    if (itemType && itemType.metadata) {
+                        return itemType.metadata.minutes_remaining;
+                    } else {
+                        return 0;
+                    }
+                };
 
-                    // Update the data for this user in the viewModel knockout object
-                    user.defectsCount(getCount(defects));
-                    user.featuresCount(getCount(features));
-                    user.incidentsCount(getCount(incidents));
-                    user.workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
-                        + getWorkRemainingMinutes(features)
-                        + getWorkRemainingMinutes(incidents))));
-                    user.dataLoaded(true);
-                })
-                .fail(function () {
-                })
-                .always(function () {
-                });
+                // Update the data for this user in the viewModel knockout object
+                user.defectsCount(getCount(defects));
+                user.featuresCount(getCount(features));
+                user.incidentsCount(getCount(incidents));
+                user.workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
+                    + getWorkRemainingMinutes(features)
+                    + getWorkRemainingMinutes(incidents))));
+                user.dataLoaded(true);
+            })
+            .fail(function () {
+            })
+            .always(function () {
+            });
         },
 
         getCurrentUserData: function () {
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users/me', '&extend=all'), {});
         },
 
-        getAllUsersData: function () {
+        getUsersList: function () {
             var querystring = '&extend=all';
             if (window.localStorage.getItem('showInactive') === 'false')
                 querystring = '&include_inactive=false' + querystring;
@@ -337,18 +391,18 @@
 
         getItemDetailsForUser: function (itemType, userId, projectId, releaseId) {
 
-            
+
             var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&columns=project,release&user_id=' + userId);
 
             if (!(projectId === 'nofilter'))//if the ID isn't nofilter
-                if (!(typeof projectId == 'undefined'))//if the ID isn't undefined
-                    if(!(projectId === '0')) //if the ID isnt 0 for "All Projects"
+                if (!(typeof projectId === 'undefined'))//if the ID isn't undefined
+                    if (!(projectId === '0')) //if the ID isnt 0 for "All Projects"
                         target = target + '&project_id=' + projectId;
             if (!(releaseId === 'nofilter'))//if the ID isn't nofilter
-                if (!(typeof releaseId == 'undefined'))//if the ID isn't undefined
-                    if(!(releaseId === '0')) //if the ID isnt 0 for "All Releases"
-                         target = target + '&release_id=' + releaseId;
-            
+                if (!(typeof releaseId === 'undefined'))//if the ID isn't undefined
+                    if (!(releaseId === '0')) //if the ID isnt 0 for "All Releases"
+                        target = target + '&release_id=' + releaseId;
+
 
             return window.myOnTimeTeam.makeApiCall(target);
         },
@@ -358,7 +412,7 @@
         },
 
         getProjects: function () {
-            
+
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('projects', ''), {});
         },
 
@@ -366,36 +420,35 @@
             var querystring = "&type=" + itemType;
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('filters', querystring), {});
         },
-        
+
 
         getReleases: function () {
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', ''), {});
         },
 
-       
-        makeApiCall: function (url)
-        {
+
+        makeApiCall: function (url) {
             var deferredResponse = $.Deferred();
             window.myOnTimeTeam.apiQueue.push({
                 url: url,
                 deferredResponse: deferredResponse
             });
 
-            
-    
+
+
 
             return deferredResponse;
         },
 
-        processApiQueue: function(){
+        processApiQueue: function () {
             var queue = window.myOnTimeTeam.apiQueue;
 
             if (!queue || !queue.length) return;
 
-            
+
             var request = queue.shift();
 
-            $.ajax(request.url, {}).done(function (response){
+            $.ajax(request.url, {}).done(function (response) {
                 request.deferredResponse.resolve(response);
             });
 
@@ -407,13 +460,13 @@
     window.setInterval(function () {
         myOnTimeTeam.processApiQueue();
     }, 175);
-  
-   
+
+
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
 
-     
+
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
             if (root.children != null) {
@@ -424,6 +477,6 @@
         }
     }
 
-   
+
 
 }(window, document, jQuery));

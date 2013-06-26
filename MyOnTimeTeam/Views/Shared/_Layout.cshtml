@@ -68,32 +68,6 @@
                                     </a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown-submenu pull-left">
-                                <a href="#">Filter by</a>
-                                <ul class="dropdown-menu">
-                                    <li><span style="font-weight: bold; margin-left: 0.7em">Projects</span></li>
-                                    <li data-filtervalue="0"><a href="#">All Projects<span class="hide icon icon-ok"></span></a></li>
-                                    <!-- ko foreach: projects -->
-                                    <li data-bind="attr: { 'data-filtervalue': value }">
-                                        <a href="#">
-                                            <!--ko text: name-->
-                                            <!--/ko-->
-                                            <span class="hide icon icon-ok"></span></a>
-                                    </li>
-                                    <!-- /ko -->
-                                    <li class="divider"></li>
-                                    <li><span style="font-weight: bold; margin-left: 0.7em">Releases</span></li>
-                                    <li releasedata-filtervalue="0"><a href="#">All Releases<span class="hide icon icon-ok"></span></a></li>
-                                    <!-- ko foreach: releases -->
-                                    <li data-bind="attr: { 'releaseData-filtervalue': value }">
-                                        <a href="#">
-                                            <!--ko text: name-->
-                                            <!--/ko-->
-                                            <span class="hide icon icon-ok"></span></a>
-                                    </li>
-                                    <!-- /ko -->
-                                </ul>
-                            </li>
                             <li id="showHidden"><a href="#">Show Hidden Users
                                     <span class="hide icon icon-ok"></span>
                             </a></li>
@@ -169,65 +143,54 @@
             </div>
 
             <div class="row-fluid">
-            <div class="span7">
-                <div class="row-fluid">
-                    
-                    <div class="span4">
-                        <label><!-- ko text: itemTypes()[0] --><!-- /ko --></label>
-                        <select id="defectselector">
-                            <option filterId ="0">None</option>
-                            <!-- ko foreach: itemFilters()[0] -->
-                            <option data-bind = "attr: { 'filterid': id }"><!-- ko text: name --><!-- /ko --></option>
-                            <!-- /ko -->
-                        </select>
+                <div class="span7">
+                    <div class="row-fluid">
+
+                        <div class="span4">
+
+                            <label>
+                                <!-- ko text: itemTypes()[0] -->
+                                <!-- /ko -->
+                            </label>
+                            <!-- populates defect filter-->
+                            <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
+
+                        </div>
+
+                        <div class="span4">
+                            <label>
+                                <!-- ko text: itemTypes()[1] -->
+                                <!-- /ko -->
+                            </label>
+                            <!-- populates features filter-->
+                            <select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
+                        </div>
+                        <div class="span4">
+                            <label>
+                                <!-- ko text: itemTypes()[2] -->
+                                <!-- /ko -->
+                            </label>
+                            <!-- populates incidents filter -->
+                            <select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
+                        </div>
                     </div>
-                    
-                    <div class="span4">
-                        <label><!-- ko text: itemTypes()[1] --><!-- /ko --></label>
-                        <select id="featureselector">
-                            <option filterId ="0">None</option>
-                            <!-- ko foreach: itemFilters()[1] -->
-                            <option data-bind = "attr: { 'filterid': id }"><!-- ko text: name --><!-- /ko --></option>
-                            <!-- /ko -->
-                        </select>
-                    </div>
-                    <div class="span4">
-                        <label><!-- ko text: itemTypes()[2] --><!-- /ko --></label>
-                        <select id="incidentselector">
-                            <option filterId ="0">None</option>
-                            <!-- ko foreach: itemFilters()[2] -->
-                            <option data-bind = "attr: { 'filterid': id }"><!-- ko text: name --><!-- /ko --></option>
-                            <!-- /ko -->
-                        </select>
+                </div>
+                <div class="span5">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <label>Projects</label>
+                            <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
+                        </div>
+                        <div class="span6">
+                            <label>Releases</label>
+                            <select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="span5">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <label>Projects</label>
-                        <select onchange="$('[data-filtervalue]').click()">
-                            <option data-filtervalue="0">All Projects</option>
-                            <!-- ko foreach: projects -->
-                            <option data-bind="attr: { 'data-filtervalue': value }"><!-- ko text: name--><!-- /ko--></option>
-                            <!--/ko-->
-                        </select>
-                    </div>
-                    <div class="span6">
-                        <label>Releases</label>
-                        <select>
-                            <option data-filtervalue="0">All Releases</option>
-                            <!-- ko foreach: releases -->
-                            <option data-bind="attr: { 'releaseData-filtervalue': value }"><!-- ko text: name--><!-- /ko--></option>
-                            <!--/ko-->
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
         </div>
 
-        
+
         @RenderBody()
         @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
@@ -255,8 +218,8 @@
 
             }
 
-          
-           
+
+
         </script>
     </div>
 </body>
