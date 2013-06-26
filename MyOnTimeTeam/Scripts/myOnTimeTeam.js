@@ -26,10 +26,6 @@
         this.visible = ko.computed(function () {
             return !this.hidden() || showHiddenObservable();
         }, this);
-        this.visible.subscribe(function () {
-            if (this.visible() && !this.dataLoaded())
-                window.myOnTimeTeam.addUserToHandle(this);
-        }, this);
         this.dataLoaded = ko.observable(false);
 
         this.fullName = ko.computed(function () {
@@ -56,7 +52,7 @@
         }, this);
     };
 
-    var usersToHandle = null;	//null means no users are currently being processed.
+   	//null means no users are currently being processed.
     //an array, empty or otherwise, means other users are
     //already being processed.
 
@@ -74,15 +70,27 @@
 
         populateItemNames: function (defects, features, incidents) {
             var name = [];
-            name.push(defects.data[0].filter_type);
+            name.push( defects.data[0].filter_type);
             name.push(features.data[0].filter_type);
             name.push(incidents.data[0].filter_type);
+
+
+            for (var i = 0; name.length ; i++)
+                name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
 
             return name;
         },
 
-        populateFilterArray: function (itemResponse) {
+        populateFilterArray: function (itemResponse,name) {
             itemArray = [];
+
+            var none = {
+                name: "All " + name,
+                id: 0
+            };
+
+            itemArray.push(none);
+
             for (var i = 0 ; i < itemResponse.data.length ; i++)
                 itemArray.push(itemResponse.data[i]);
 
@@ -93,6 +101,7 @@
 
             var itemArray = [];
 
+         
             itemArray.push(defectArray);
             itemArray.push(featureArray);
             itemArray.push(incidentArray);
@@ -159,16 +168,16 @@
 
 
                 var nameArray = window.myOnTimeTeam.populateItemNames(defectFilterResponse, featureFilterResponse, incidentFilterResponse);
-                var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse);
-                var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse);
-                var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse);
+                var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse, 'Defects');
+                var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, 'Features');
+                var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse, 'Incidents');
                 var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray);
                 var projectArray = window.myOnTimeTeam.populateDesignArray(projectsResponse, 'Projects');
                 var releaseArray = window.myOnTimeTeam.populateDesignArray(releasesResponse, 'Releases');
 
 
 
-                    nameArray[k] = nameArray[k].charAt(0).toUpperCase() + nameArray[k].slice(1);
+                 
 
                 viewModel.itemTypes = ko.mapping.fromJS(nameArray);
                 viewModel.itemFilters = ko.mapping.fromJS(itemFilters);
@@ -185,6 +194,9 @@
                 viewModel.showInactive = ko.observable(localStorage.getItem('showInactive') === "true");
                 viewModel.filterProjectsBy = ko.observable(window.localStorage.getItem('filter') || "nofilter");
                 viewModel.filterReleasesBy = ko.observable(window.localStorage.getItem('releasefilter') || "nofilter");
+                viewModel.filterDefectsBy = ko.observable(window.localStorage.getItem('defectfilter') || "nofilter");
+                viewModel.filterFeaturesBy = ko.observable(window.localStorage.getItem('featurefilter') || "nofilter");
+                viewModel.filterIncidentsBy = ko.observable(window.localStorage.getItem('incidentfilter') || "nofilter");
 
                 var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
                 viewModel.users = ko.observableArray(userModels);
@@ -224,13 +236,41 @@
                     return visibleArray.sort(sortFn);
                 }, viewModel);
                 viewModel.updateProject = ko.computed(function () {
-                    this.projectId();
                     var newFilter = this.projectId();
                     localStorage.setItem('filter', newFilter);
                     viewModel.filterProjectsBy(newFilter);
-
+                    myOnTimeTeam.getUsersData(viewModel);
 
                 }, viewModel);
+
+                viewModel.updateRelease = ko.computed(function () {
+                    var newReleaseFilter = this.releaseId();
+                    localStorage.setItem('releasefilter', newReleaseFilter);
+                    viewModel.filterReleasesBy(newReleaseFilter);
+                    myOnTimeTeam.getUsersData(viewModel);
+
+                }, viewModel);
+
+                viewModel.updateDefect = ko.computed(function () {
+                    var newDefectFilter = this.defectId();
+                    localStorage.setItem('defectfilter', newDefectFilter);
+                    viewModel.filterDefectsBy(newDefectFilter);
+                    myOnTimeTeam.getUsersData(viewModel);
+
+                }, viewModel);
+                viewModel.updateFeature = ko.computed(function () {
+                    var newFeatureFilter = this.featureId();
+                    localStorage.setItem('featurefilter', newFeatureFilter);
+                    viewModel.filterFeaturesBy(newFeatureFilter);
+                    myOnTimeTeam.getUsersData(viewModel);
+                }, viewModel);
+                viewModel.updateIncident = ko.computed(function () {
+                    var newIncidentFilter = this.incidentId();
+                    localStorage.setItem('incidentfilter', newIncidentFilter);
+                    viewModel.filterIncidentsBy(newIncidentFilter);
+                    myOnTimeTeam.getUsersData(viewModel);
+                }, viewModel);
+
 
 
 
@@ -284,13 +324,8 @@
 
                 //$.when(viewModel.filterProjectsBy(), viewModel.filterReleasesBy()).done(function (filterprojects, filterreleases)
                 //{
-                myOnTimeTeam.getNextUsersData(viewModel.users(),viewModel.filterProjectsBy(), viewModel.filterReleasesBy());
-
-                for (var i = 0, l = viewModel.users().length; i < l; i++) {
-                    var user = viewModel.users()[i];
-                    if (user.visible())
-                        myOnTimeTeam.addUserToHandle(viewModel.users()[i], viewModel.filterProjectsBy(), viewModel.filterReleasesBy());
-                }
+                myOnTimeTeam.getUsersData(viewModel);
+           
 
                 //});
 
@@ -300,19 +335,11 @@
             return viewModel;
         },
 
-        addUserToHandle: function (user, filterprojects, filterreleases) {
-            if (usersToHandle === null) {
-                usersToHandle = [user];
-                this.getNextUsersData(filterprojects, filterreleases);
-            }
-            else {
-                usersToHandle.push(user);
-            }
-        },
+    
 
-        getNextUsersData: function (usersArray, projectFilter, releaseFilter) {
+        getUsersData: function (viewModel) {
 
-            if (!usersArray)
+            if (!viewModel.users())
                 return;
 
 
@@ -321,14 +348,14 @@
             var found = false;
 
 
-            for (var i = 0; i < usersArray.length ; i++) {
+            for (var i = 0; i < viewModel.users().length ; i++) {
                 found = false;
                 for (var j = 0; j < hiddenUsersArray.length ; j++) {
-                    if (hiddenUsersArray[j] === usersArray[i].id.toString())
+                    if (hiddenUsersArray[j] === viewModel.users()[i].id.toString())
                         found = true;
 
                     if (!found || viewModel.showHidden()) {
-                        this.getUserData(usersArray[i], projectFilter, releaseFilter);
+                        this.getUserDataCalls(viewModel.users()[i], viewModel);
                     }
                 }
 
@@ -341,10 +368,10 @@
 
 
 
-        getUserData: function (user, projectFilter, releaseFilter) {
-            return $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, projectFilter, releaseFilter)
-                , myOnTimeTeam.getItemDetailsForUser('features', user.id, projectFilter, releaseFilter)
-                , myOnTimeTeam.getItemDetailsForUser('incidents', user.id, projectFilter, releaseFilter))
+        getUserDataCalls: function (user, viewModel) {
+                 $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, viewModel)
+                , myOnTimeTeam.getItemDetailsForUser('features', user.id, viewModel)
+                , myOnTimeTeam.getItemDetailsForUser('incidents', user.id, viewModel))
             .done(function (defects, features, incidents) {
                 var getCount = function (itemType) {
                     if (itemType && itemType.metadata) {
@@ -390,19 +417,36 @@
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users', querystring), {});
         },
 
-        getItemDetailsForUser: function (itemType, userId, projectId, releaseId) {
+        getItemDetailsForUser: function (itemType, userId, viewModel) {
 
 
-            var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&columns=project,release&user_id=' + userId);
+            var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&include_sub_project_items=true&columns=project,release&user_id=' + userId);
 
-            if (!(projectId === 'nofilter'))//if the ID isn't nofilter
-                if (!(typeof projectId === 'undefined'))//if the ID isn't undefined
-                    if (!(projectId === '0')) //if the ID isnt 0 for "All Projects"
-                        target = target + '&project_id=' + projectId;
-            if (!(releaseId === 'nofilter'))//if the ID isn't nofilter
-                if (!(typeof releaseId === 'undefined'))//if the ID isn't undefined
-                    if (!(releaseId === '0')) //if the ID isnt 0 for "All Releases"
-                        target = target + '&release_id=' + releaseId;
+            if (!(viewModel.filterProjectsBy() === 'nofilter'))//if the ID isn't nofilter
+                if (!(typeof viewModel.filterProjectsBy() === 'undefined'))//if the ID isn't undefined
+                    if (!(viewModel.filterProjectsBy().toString() === '0')) //if the ID isnt 0 for "All Projects"
+                        target = target + '&project_id=' + viewModel.filterProjectsBy();
+            if (!(viewModel.filterReleasesBy() === 'nofilter'))//if the ID isn't nofilter
+                if (!(typeof viewModel.filterReleasesBy() === 'undefined'))//if the ID isn't undefined
+                    if (!(viewModel.filterReleasesBy().toString() === '0')) //if the ID isnt 0 for "All Releases"
+                        target = target + '&release_id=' + viewModel.filterReleasesBy();
+
+            if (itemType === 'defects')
+                if (!(viewModel.filterDefectsBy() === 'nofilter'))//if the ID isn't nofilter
+                    if (!(typeof viewModel.filterDefectsBy() === 'undefined'))//if the ID isn't undefined
+                        if (!(viewModel.filterDefectsBy().toString() === '0'))
+                            target = target + '&filter_id=' + viewModel.filterDefectsBy();
+            if (itemType === 'features')
+                if (!(viewModel.filterFeaturesBy() === 'nofilter'))//if the ID isn't nofilter
+                    if (!(typeof viewModel.filterFeaturesBy() === 'undefined'))//if the ID isn't undefined
+                        if (!(viewModel.filterFeaturesBy().toString() === '0'))
+                            target = target + '&filter_id=' + viewModel.filterFeaturesBy();
+            if (itemType === 'incidents')
+                if (!(viewModel.filterIncidentsBy() === 'nofilter'))//if the ID isn't nofilter
+                    if (!(typeof viewModel.filterIncidentsBy() === 'undefined'))//if the ID isn't undefined
+                        if (!(viewModel.filterIncidentsBy().toString() === '0'))
+                            target = target + '&filter_id=' + viewModel.filterIncidentsBy();
+
 
 
             return window.myOnTimeTeam.makeApiCall(target);

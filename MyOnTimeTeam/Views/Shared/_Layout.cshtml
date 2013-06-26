@@ -142,6 +142,9 @@
                 }
             </div>
 
+             @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
+             {
             <div class="row-fluid filterBar">
                 <div class="span7">
                     <div class="row-fluid">
@@ -188,8 +191,9 @@
                     </div>
                 </div>
             </div>
+             }
         </div>
-
+             
 
         @RenderBody()
         @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
