@@ -168,6 +168,7 @@
 
 
 
+                    nameArray[k] = nameArray[k].charAt(0).toUpperCase() + nameArray[k].slice(1);
 
                 viewModel.itemTypes = ko.mapping.fromJS(nameArray);
                 viewModel.itemFilters = ko.mapping.fromJS(itemFilters);
