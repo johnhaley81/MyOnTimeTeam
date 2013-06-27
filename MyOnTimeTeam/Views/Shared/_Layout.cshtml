@@ -118,8 +118,8 @@
                             $('#showHidden .icon-ok').toggleClass('hide', !newShow)
                             localStorage.setItem("showHidden", newShow);
                             viewModel.showHidden(newShow);
-                            var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
-                            viewModel.users = ko.observableArray(userModels);
+                            myOnTimeTeam.getUsersData(viewModel);
+                            
                         });
 
                         $('#showInactive .icon-ok').toggleClass('hide',

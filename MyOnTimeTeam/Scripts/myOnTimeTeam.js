@@ -18,7 +18,7 @@
             var hiddenUsers = localStorage.getItem('hiddenUsers').split(','),
                 that = this;
             hiddenUsers = $.grep(hiddenUsers, function (item) {
-                return item !== that.id;
+                return item !== that.id.toString();
             });
             localStorage.setItem('hiddenUsers', hiddenUsers);
             this.hidden(false);
@@ -363,12 +363,6 @@
                 }
 
             },
-
-
-        
-
-
-
 
 
         getUserDataCalls: function (user, viewModel) {
