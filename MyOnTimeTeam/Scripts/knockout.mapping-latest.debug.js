@@ -324,7 +324,6 @@
 
 		var createCallback = function (data) {
 			return withProxyDependentObservable(dependentObservables, function () {
-
 				if (ko.utils.unwrapObservable(parent) instanceof Array) {
 					return options[parentName].create({
 						data: data || callbackParams.data,
@@ -408,7 +407,6 @@
 							if (hasCreateOrUpdateCallback) return mappedRootObject;
 						}
 				}
-
 			} else {
 				mappedRootObject = ko.utils.unwrapObservable(mappedRootObject);
 				if (!mappedRootObject) {

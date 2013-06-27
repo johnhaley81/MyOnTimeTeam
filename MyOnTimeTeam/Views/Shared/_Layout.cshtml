@@ -35,12 +35,9 @@
             window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
             window.localStorage.setItem('apiCallCounter', 0);
         }
-
-       
     </script>
 </head>
 <body>
-
 
     <div class="navbar navbar-inverse">
         <div class="navbar-inner">
@@ -48,15 +45,16 @@
             @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
             {
-                    
-                
+
                 <div class="topBar">
                     <span style="margin-top: .25em"></span>
                     <span class="userObject">
                         <img id="userImage" class="icon-" height="16" width="16" />
                         <span id="userName"></span></span>
-
-                    <a class="btn btn-primary btn-small" id="aboutButton">About</a>
+                    <ul class="nav">
+                        <li><a href="#" id="aboutButton">About</a></li>
+                        </ul>
+                    
                     <a class="btn btn-primary btn-small" id="logoutButton">Logout</a>
                 </div>
                 <script>
@@ -68,25 +66,13 @@
                         $("#userName").text(data.first_name + " " + data.last_name);
                     });
 
-
-
                     var viewModel = window.myOnTimeTeam.refreshData();
-
-
-
-
-
-
-
 
                     $('#aboutButton').click(function () {
                         $.modalPopup('@Utils.GetSiteRoot()/home/about');
                     });
-
-
-
                 </script>
-                    
+
                 <div class="modal hide fade" id="apiModal">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -109,8 +95,7 @@
             <div class="container accordion" id="containerBar">
                 <div class="accordion-group">
                     <div class="accordion-heading controlBar">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#containerBar" href="#filterCollapse">Options Bar</a>
-
+                        <a class="accordion-toggle alignright" data-toggle="collapse" data-parent="#containerBar" href="#filterCollapse" id="iconChangeToggle"><span class="icon-chevron-up" id="chevronUp"></span><span class="icon-chevron-down hide" id="chevronDown"></span></a>
                     </div>
                     <div class="controlBar accordion-body collapse in" id="filterCollapse">
                         <div class="row-fluid filterBar">
@@ -125,7 +110,6 @@
                                         </label>
                                         <!-- populates defect filter-->
                                         <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
-
                                     </div>
 
                                     <div class="span4">
@@ -177,21 +161,16 @@
                                 <label>Sort By</label>
                                 <select data-bind="value: sortBy">
                                     <option value="name">User Name
-                                            
                                     </option>
                                     <option value="work">Work Remaining
-                                            
                                     </option>
                                     <option value="defects">Defect Count
-                                            
                                     </option>
                                     <option value="features">Feature Count
-                                            
                                     </option>
                                     <option value="incidents">Incident Count
-                                            
                                     </option>
-                                    <option value="items">Item Count 
+                                    <option value="items">Item Count
                                     </option>
                                 </select>
                             </div>
@@ -200,9 +179,7 @@
                 </div>
             </div>
         }
-
     </div>
-
 
     @RenderBody()
     @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
@@ -223,16 +200,22 @@
         if ($('#logoutButton')) {
             $('#logoutButton').click(function () {
                 document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
-                    document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
 
-                    document.location = "";
-                });
+                document.location = "";
+            });
 
+        }
 
-            }
+        $('#chevronUp').click(function () {
+            $('#chevronUp').addClass('hide');
+            $('#chevronDown').removeClass('hide');
+        });
 
-
-
+        $('#chevronDown').click(function () {
+            $('#chevronDown').addClass('hide');
+            $('#chevronUp').removeClass('hide');
+        });
     </script>
     </div>
 </body>

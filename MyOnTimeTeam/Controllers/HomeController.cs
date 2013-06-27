@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace MyOnTimeTeam.Controllers
@@ -13,7 +10,7 @@ namespace MyOnTimeTeam.Controllers
             ViewBag.message = "Please log in to your OnTime instance and allow My OnTime Team to access it.";
             return View();
         }*/
-        
+
         public ActionResult Index(string err)
         {
             try
@@ -39,7 +36,5 @@ namespace MyOnTimeTeam.Controllers
         {
             return PartialView();
         }
-
-
     }
 }

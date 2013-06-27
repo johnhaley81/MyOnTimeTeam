@@ -2,31 +2,46 @@
 </div>
 
 <script id="gridTmpl" type="text/html">
-	<!-- ko foreach: usersSorted -->
-	<div class="well" data-bind="visible: visible">
-		<div class="media">
-			<a class="pull-left">
-				<img class="media-object thumbnail" data-bind="attr: { src: userImage }" />
-			</a>
-			<div class="media-body">
-				<div class="close" data-bind="visible: !hidden(), click: hide" title="Hide this user"><i class="icon-remove"></i></div>
-				<div class="close" data-bind="visible: hidden, click: show" title="Show this user"><i class="icon-eye-open"></i></div>
-				<h4><!-- ko text: fullName --><!-- /ko --></h4>
-				<div data-bind="visible: dataLoaded">
-					<div>
-						<span data-bind="visible: defectsCount() !== 0" class="label label-warning">Defects: <!-- ko text: defectsCount --><!-- /ko --></span>
-						<span data-bind="visible: featuresCount() !== 0" class="label label-info">Features: <!-- ko text: featuresCount --><!-- /ko --></span>
-						<span data-bind="visible: incidentsCount() !== 0" class="label label-important">Incidents: <!-- ko text: incidentsCount --><!-- /ko --></span>
-					</div>
-					<div>
-						<span>Estimated work remaining: <!-- ko text: workRemaining --><!-- /ko --></span>
-					</div>
-				</div>
-				<div data-bind="visible: !dataLoaded()">
-					<i class="icon icon-refresh spin"></i>
-				</div>
-			</div>
-		</div>
-	</div>
-<!-- /ko -->
+    <!-- ko foreach: usersSorted -->
+    <div class="well" data-bind="visible: visible">
+        <div class="media">
+            <a class="pull-left">
+                <img class="media-object thumbnail" data-bind="attr: { src: userImage }" />
+            </a>
+            <div class="media-body">
+                <div class="close" data-bind="visible: !hidden(), click: hide" title="Hide this user"><i class="icon-remove"></i></div>
+                <div class="close" data-bind="visible: hidden, click: show" title="Show this user"><i class="icon-eye-open"></i></div>
+                <h4>
+                    <!-- ko text: fullName -->
+                    <!-- /ko -->
+                </h4>
+                <div data-bind="visible: dataLoaded">
+                    <div>
+                        <span data-bind="visible: defectsCount() !== 0" class="label label-warning">Defects:
+                            <!-- ko text: defectsCount -->
+                            <!-- /ko -->
+                        </span>
+                        <span data-bind="visible: featuresCount() !== 0" class="label label-info">Features:
+                            <!-- ko text: featuresCount -->
+                            <!-- /ko -->
+                        </span>
+                        <span data-bind="visible: incidentsCount() !== 0" class="label label-important">Incidents:
+                            <!-- ko text: incidentsCount -->
+                            <!-- /ko -->
+                        </span>
+                    </div>
+                    <div>
+                        <span>Estimated work remaining:
+                            <!-- ko text: workRemaining -->
+                            <!-- /ko -->
+                        </span>
+                    </div>
+                </div>
+                <div data-bind="visible: !dataLoaded()">
+                    <i class="icon icon-refresh spin"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
 </script>

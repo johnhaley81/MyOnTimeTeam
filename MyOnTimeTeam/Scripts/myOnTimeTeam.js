@@ -55,12 +55,8 @@
    	//null means no users are currently being processed.
     //an array, empty or otherwise, means other users are
     //already being processed.
-    
 
     window.myOnTimeTeam = {
-
-       
-
         apiCache : {},
 
         initializeViewModel: function (viewModel) {
@@ -79,7 +75,6 @@
             name.push( defects.data[0].filter_type);
             name.push(features.data[0].filter_type);
             name.push(incidents.data[0].filter_type);
-
 
             for (var i = 0; i<name.length ; i++)
                 name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
@@ -104,10 +99,8 @@
         },
 
         populateItemFilterArray: function (defectArray, featureArray, incidentArray) {
-
             var itemArray = [];
 
-         
             itemArray.push(defectArray);
             itemArray.push(featureArray);
             itemArray.push(incidentArray);
@@ -118,7 +111,6 @@
         populateDesignArray: function (designResponse, name) {
             var designArray = [];
 
-
             var allDesign = {
                 name: "All " + name,
                 id: 0
@@ -127,25 +119,20 @@
 
             for (var i = 0 ; i < designResponse.data.length ; i++) {
                 recursivepush(designResponse.data[i], designArray, 0);
-
             }
 
             return designArray;
         },
 
         populateUserModels: function (userResponse, viewModel) {
-
             var userModels = [];
 
             for (var i = 0, l = userResponse.data.length; i < l; i++) {
                 userModels.push(new User(userResponse.data[i], viewModel.showHidden));
             }
 
-
             return userModels;
-
         },
-
 
         refreshData: function () {
             var viewModel = {}
@@ -170,9 +157,6 @@
                 if (!incidentFilterResponse || !incidentFilterResponse.data)
                     return;
 
-
-
-
                 var nameArray = window.myOnTimeTeam.populateItemNames(defectFilterResponse, featureFilterResponse, incidentFilterResponse);
                 var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse, 'Defects');
                 var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, 'Features');
@@ -181,19 +165,10 @@
                 var projectArray = window.myOnTimeTeam.populateDesignArray(projectsResponse, 'Projects');
                 var releaseArray = window.myOnTimeTeam.populateDesignArray(releasesResponse, 'Releases');
 
-
-
-                 
-
                 viewModel.itemTypes = ko.mapping.fromJS(nameArray);
                 viewModel.itemFilters = ko.mapping.fromJS(itemFilters);
                 viewModel.projects = ko.mapping.fromJS(projectArray);
                 viewModel.releases = ko.mapping.fromJS(releaseArray);
-
-
-
-
-
 
                 viewModel.sortBy = ko.observable(window.localStorage.getItem('sort') || "name");
                 viewModel.showHidden = ko.observable(localStorage.getItem('showHidden') === "true");
@@ -203,14 +178,9 @@
                 viewModel.filterDefectsBy = ko.observable(window.localStorage.getItem('defectfilter') || "nofilter");
                 viewModel.filterFeaturesBy = ko.observable(window.localStorage.getItem('featurefilter') || "nofilter");
                 viewModel.filterIncidentsBy = ko.observable(window.localStorage.getItem('incidentfilter') || "nofilter");
-                
 
                 var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
                 viewModel.users = ko.observableArray(userModels);
-
-                
-                
-              
 
                 viewModel.usersSorted = ko.computed(function () {
                     var sortType = this.sortBy(),
@@ -247,7 +217,6 @@
                     localStorage.setItem('filter', newFilter);
                     viewModel.filterProjectsBy(newFilter);
                     myOnTimeTeam.getUsersData(viewModel);
-
                 }, viewModel);
 
                 viewModel.updateRelease = ko.computed(function () {
@@ -255,7 +224,6 @@
                     localStorage.setItem('releasefilter', newReleaseFilter);
                     viewModel.filterReleasesBy(newReleaseFilter);
                     myOnTimeTeam.getUsersData(viewModel);
-
                 }, viewModel);
 
                 viewModel.updateDefect = ko.computed(function () {
@@ -263,7 +231,6 @@
                     localStorage.setItem('defectfilter', newDefectFilter);
                     viewModel.filterDefectsBy(newDefectFilter);
                     myOnTimeTeam.getUsersData(viewModel);
-
                 }, viewModel);
                 viewModel.updateFeature = ko.computed(function () {
                     var newFeatureFilter = this.featureId();
@@ -286,15 +253,8 @@
                         myOnTimeTeam.getUsersData(viewModel);
                     });
                 }, viewModel);
-               
-
-
-
-
-
 
                 myOnTimeTeam.getUsersData(viewModel);
-           
 
                 //});
 
@@ -304,18 +264,12 @@
             return viewModel;
         },
 
-    
-
         getUsersData: function (viewModel) {
-
             if (!viewModel.users())
                 return;
 
-
-
             var hiddenUsersArray = window.localStorage.hiddenUsers.split(',');
             var found = false;
-
 
             for (var i = 0; i < viewModel.users().length ; i++) {
                 found = false;
@@ -327,9 +281,7 @@
                         this.getUserDataCalls(viewModel, i);
                     }
                 }
-
             },
-
 
         getUserDataCalls: function (viewModel, index) {
             $.when(myOnTimeTeam.getItemDetailsForUser('defects', viewModel.users()[index].id, viewModel)
@@ -376,13 +328,10 @@
             if (window.localStorage.getItem('showInactive') === 'false')
                 querystring = '&include_inactive=false' + querystring;
 
-
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('users', querystring), {});
         },
 
         getItemDetailsForUser: function (itemType, userId, viewModel) {
-
-
             var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&include_sub_project_items=true&columns=project,release&user_id=' + userId);
 
             if (!(viewModel.filterProjectsBy() === 'nofilter'))//if the ID isn't nofilter
@@ -410,8 +359,6 @@
                         if (!(viewModel.filterIncidentsBy().toString() === '0'))
                             target = target + '&filter_id=' + viewModel.filterIncidentsBy();
 
-
-
             return window.myOnTimeTeam.makeApiCall(target);
         },
 
@@ -420,7 +367,6 @@
         },
 
         getProjects: function () {
-
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('projects', ''), {});
         },
 
@@ -429,17 +375,14 @@
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('filters', querystring), {});
         },
 
-
         getReleases: function () {
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', ''), {});
         },
-
 
         makeApiCall: function (url) {
             var deferredResponse = $.Deferred();
 
             if (myOnTimeTeam.apiCache && myOnTimeTeam.apiCache[url]) {
-
                 deferredResponse.resolve(myOnTimeTeam.apiCache[url]);
             }
 
@@ -458,8 +401,6 @@
                 }
             }
 
-
-
             return deferredResponse;
         },
 
@@ -468,15 +409,11 @@
 
             if (!queue || !queue.length) return;
 
-
             var request = queue.shift();
             var date = new Date();
 
             var apiCall = window.localStorage.getItem('apiCallCounter');
             var apidate = window.localStorage.getItem('apiDate');
-
-           
-            
 
             $.ajax(request.url, {}).done(function (response) {
                 if (apidate === date.getDate() + '/' + date.getMonth() + '/' + date.getYear()) {
@@ -494,12 +431,10 @@
                         viewModel.apiAlertMessage("My OnTime Team has reached the 1000 API call limit. The program will not function until tomorrow.");
                         $('#apiModal').modal({ show: true });
                     }
-                        
                 }
                 myOnTimeTeam.apiCache[request.url] = response;
                 request.deferredResponse.resolve(response);
             });
-
         },
 
         apiQueue: []
@@ -509,11 +444,8 @@
         myOnTimeTeam.processApiQueue();
     }, 175);
 
-
-
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
-
 
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
@@ -524,7 +456,4 @@
             }
         }
     }
-
-
-
 }(window, document, jQuery));

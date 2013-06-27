@@ -937,7 +937,6 @@ ko.subscribable['fn'] = {
     extend: applyExtenders
 };
 
-
 ko.isSubscribable = function (instance) {
     return typeof instance.subscribe == "function" && typeof instance["notifySubscribers"] == "function";
 };
@@ -1046,7 +1045,6 @@ ko.isWriteableObservable = function (instance) {
     // Anything else
     return false;
 }
-
 
 ko.exportSymbol('observable', ko.observable);
 ko.exportSymbol('isObservable', ko.isObservable);
@@ -2856,7 +2854,6 @@ ko.templateRewriting = (function () {
     }
 })();
 
-
 // Exported only because it has to be referenced by string lookup from within rewritten template
 ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextSibling);
 (function() {
@@ -3105,7 +3102,6 @@ ko.exportSymbol('__tr_ambtns', ko.templateRewriting.applyMemoizedBindingsToNextS
             // Call setDomNodeChildrenFromArrayMapping, ignoring any observables unwrapped within (most likely from a callback function).
             // If the array items are observables, though, they will be unwrapped in executeTemplateForArrayItem and managed within setDomNodeChildrenFromArrayMapping.
             ko.dependencyDetection.ignore(ko.utils.setDomNodeChildrenFromArrayMapping, null, [targetNode, filteredArray, executeTemplateForArrayItem, options, activateBindingsCallback]);
-
         }, null, { disposeWhenNodeIsRemoved: targetNode });
     };
 
