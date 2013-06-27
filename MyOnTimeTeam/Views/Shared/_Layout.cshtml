@@ -118,7 +118,8 @@
                             $('#showHidden .icon-ok').toggleClass('hide', !newShow)
                             localStorage.setItem("showHidden", newShow);
                             viewModel.showHidden(newShow);
-                            window.location.reload();
+                            var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
+                            viewModel.users = ko.observableArray(userModels);
                         });
 
                         $('#showInactive .icon-ok').toggleClass('hide',
@@ -129,7 +130,11 @@
                             $('#showInactive .icon-ok').toggleClass('hide', !inactiveShow)
                             localStorage.setItem("showInactive", inactiveShow);
                             viewModel.showInactive(inactiveShow);
-                            window.location.reload();
+                            $.when(window.myOnTimeTeam.getUsersList()).done(function (usersResponse) {
+                                var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
+                                viewModel.users(userModels);
+                                myOnTimeTeam.getUsersData(viewModel);
+                            });
                         });
 
 
