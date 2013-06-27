@@ -29,6 +29,14 @@
         if (window.localStorage.getItem('showInactive') === null) {
             window.localStorage.setItem('showInactive', false);
         }
+
+        if (window.localStorage.getItem('apiCallCounter') == null) {
+            var date = new Date();
+            window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
+            window.localStorage.setItem('apiCallCounter', 0);
+        }
+
+       
     </script>
 </head>
 <body>
@@ -41,6 +49,7 @@
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
             {
                     
+                
                 <div class="topBar">
                     <span style="margin-top: .25em"></span>
                     <span class="userObject">
@@ -67,16 +76,26 @@
 
 
 
-               
+
+
 
                     $('#aboutButton').click(function () {
                         $.modalPopup('@Utils.GetSiteRoot()/home/about');
-                        });
+                    });
 
 
 
                 </script>
                     
+                <div class="modal hide fade" id="apiModal">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3>API Alert</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p data-bind="text: apiAlertMessage"></p>
+                    </div>
+                </div>
             }
             else
             {
@@ -89,7 +108,7 @@
         {
             <div class="container accordion" id="containerBar">
                 <div class="accordion-group">
-                    <div class="accordion-heading controlBar" >
+                    <div class="accordion-heading controlBar">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#containerBar" href="#filterCollapse">Options Bar</a>
 
                     </div>
@@ -156,7 +175,7 @@
                             </div>
                             <div class="span5 text-center">
                                 <label>Sort By</label>
-                                <select data-bind= "value: sortBy">
+                                <select data-bind="value: sortBy">
                                     <option value="name">User Name
                                             
                                     </option>
@@ -199,11 +218,11 @@
         if ($('#loginButton')) {
             $('#loginButton').click(function () {
                 $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
-                });
-            }
-            if ($('#logoutButton')) {
-                $('#logoutButton').click(function () {
-                    document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+            });
+        }
+        if ($('#logoutButton')) {
+            $('#logoutButton').click(function () {
+                document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
                     document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
 
                     document.location = "";

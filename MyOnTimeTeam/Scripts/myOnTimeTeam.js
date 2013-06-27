@@ -59,6 +59,8 @@
 
     window.myOnTimeTeam = {
 
+       
+
         apiCache : {},
 
         initializeViewModel: function (viewModel) {
@@ -67,6 +69,7 @@
             viewModel.incidentId = ko.observable(0);
             viewModel.projectId = ko.observable(0);
             viewModel.releaseId = ko.observable(0);
+            viewModel.apiAlertMessage = ko.observable("empty");
 
             return viewModel;
         },
@@ -200,12 +203,13 @@
                 viewModel.filterDefectsBy = ko.observable(window.localStorage.getItem('defectfilter') || "nofilter");
                 viewModel.filterFeaturesBy = ko.observable(window.localStorage.getItem('featurefilter') || "nofilter");
                 viewModel.filterIncidentsBy = ko.observable(window.localStorage.getItem('incidentfilter') || "nofilter");
+                
 
                 var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
                 viewModel.users = ko.observableArray(userModels);
 
-
-
+                
+                
               
 
                 viewModel.usersSorted = ko.computed(function () {
@@ -466,11 +470,32 @@
 
 
             var request = queue.shift();
+            var date = new Date();
 
-            
+            var apiCall = window.localStorage.getItem('apiCallCounter');
+            var apidate = window.localStorage.getItem('apiDate');
+
+           
             
 
             $.ajax(request.url, {}).done(function (response) {
+                if (apidate === date.getDate() + '/' + date.getMonth() + '/' + date.getYear()) {
+                    window.localStorage.setItem('apiCallCounter', (parseInt(apiCall, 10) + 1));
+                    if (apiCall === '500')
+                    {
+                        viewModel.apiAlertMessage("My OnTime Team has used approximately 500 API calls today. OnTime allows a maximum of 1000 calls per day.");
+                        $('#apiModal').modal({ show: true });
+                    }
+                    if (apiCall === '750') {
+                        viewModel.apiAlertMessage("My OnTime Team has used approximately 750 API calls today. OnTime allows a maximum of 1000 calls per day.");
+                        $('#apiModal').modal({ show: true });
+                    }
+                    if (apiCall === '1000') {
+                        viewModel.apiAlertMessage("My OnTime Team has reached the 1000 API call limit. The program will not function until tomorrow.");
+                        $('#apiModal').modal({ show: true });
+                    }
+                        
+                }
                 myOnTimeTeam.apiCache[request.url] = response;
                 request.deferredResponse.resolve(response);
             });
