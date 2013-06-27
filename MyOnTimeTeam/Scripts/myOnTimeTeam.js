@@ -356,16 +356,16 @@
                 for (var j = 0; j < hiddenUsersArray.length ; j++) {
                     if (hiddenUsersArray[j] === viewModel.users()[i].id.toString())
                         found = true;
-
+                }
                     if (!found || viewModel.showHidden()) {
                         this.getUserDataCalls(viewModel.users()[i], viewModel);
                     }
                 }
 
-            }
+            },
 
 
-        },
+        
 
 
 
@@ -484,10 +484,18 @@
             }
 
             else {
-                window.myOnTimeTeam.apiQueue.push({
-                    url: url,
-                    deferredResponse: deferredResponse
-                });
+                var add = true;
+                for (var i = 0 ; i < window.myOnTimeTeam.apiQueue.length; i++)
+                {
+                    if (url === window.myOnTimeTeam.apiQueue[i].url)
+                        add = false;
+                }
+                if (add) {
+                    window.myOnTimeTeam.apiQueue.push({
+                        url: url,
+                        deferredResponse: deferredResponse
+                    });
+                }
             }
 
 
