@@ -55,8 +55,11 @@
    	//null means no users are currently being processed.
     //an array, empty or otherwise, means other users are
     //already being processed.
+    
 
     window.myOnTimeTeam = {
+
+        apiCache : {},
 
         initializeViewModel: function (viewModel) {
             viewModel.defectId = ko.observable(0);
@@ -75,7 +78,7 @@
             name.push(incidents.data[0].filter_type);
 
 
-            for (var i = 0; name.length ; i++)
+            for (var i = 0; i<name.length ; i++)
                 name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
 
             return name;
@@ -474,11 +477,18 @@
 
         makeApiCall: function (url) {
             var deferredResponse = $.Deferred();
-            window.myOnTimeTeam.apiQueue.push({
-                url: url,
-                deferredResponse: deferredResponse
-            });
 
+            if (myOnTimeTeam.apiCache && myOnTimeTeam.apiCache[url]) {
+
+                deferredResponse.resolve(myOnTimeTeam.apiCache[url]);
+            }
+
+            else {
+                window.myOnTimeTeam.apiQueue.push({
+                    url: url,
+                    deferredResponse: deferredResponse
+                });
+            }
 
 
 
@@ -493,7 +503,11 @@
 
             var request = queue.shift();
 
+            
+            
+
             $.ajax(request.url, {}).done(function (response) {
+                myOnTimeTeam.apiCache[request.url] = response;
                 request.deferredResponse.resolve(response);
             });
 
