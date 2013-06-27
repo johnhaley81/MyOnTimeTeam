@@ -53,8 +53,8 @@
                         <span id="userName"></span></span>
                     <ul class="nav">
                         <li><a href="#" id="aboutButton">About</a></li>
-                        </ul>
-                    
+                    </ul>
+
                     <a class="btn btn-primary btn-small" id="logoutButton">Logout</a>
                 </div>
                 <script>
@@ -207,16 +207,17 @@
 
         }
 
-        $('#chevronUp').click(function () {
-            $('#chevronUp').addClass('hide');
-            $('#chevronDown').removeClass('hide');
+        $('#iconChangeToggle').click(function () {
+            if ($('#chevronUp').hasClass('hide')) {
+                $('#chevronDown').addClass('hide');
+                $('#chevronUp').removeClass('hide');
+            }
+            else {
+                $('#chevronUp').addClass('hide');
+                $('#chevronDown').removeClass('hide');
+            }
         });
 
-        $('#chevronDown').click(function () {
-            $('#chevronDown').addClass('hide');
-            $('#chevronUp').removeClass('hide');
-        });
     </script>
-    </div>
 </body>
 </html>
