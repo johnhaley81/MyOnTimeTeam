@@ -280,6 +280,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Accounts\tokenRedirect.cshtml" />
     <Content Include="Views\Accounts\LoginFailed.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

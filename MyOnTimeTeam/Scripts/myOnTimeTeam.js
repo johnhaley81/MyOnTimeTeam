@@ -206,7 +206,7 @@
 
 
 
-
+              
 
                 viewModel.usersSorted = ko.computed(function () {
                     var sortType = this.sortBy(),
@@ -274,59 +274,21 @@
                     myOnTimeTeam.getUsersData(viewModel);
                 }, viewModel);
 
+                viewModel.updateInactiveUsers = ko.computed(function () {
+                    localStorage.setItem("showInactive", viewModel.showInactive());
+                    $.when(window.myOnTimeTeam.getUsersList()).done(function (usersResponse) {
+                        var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
+                        viewModel.users(userModels);
+                        myOnTimeTeam.getUsersData(viewModel);
+                    });
+                }, viewModel);
+               
 
 
 
 
 
 
-
-
-
-
-
-
-                /*var filtersort = window.localStorage.getItem('filter');
-                var releasefiltersort = window.localStorage.getItem('releasefilter');
-
-                if (filtersort)
-                    $('[data-filtervalue="' + filtersort + '"] .icon-ok').removeClass('hide');
-
-                $('[data-filtervalue]').unbind('click');
-
-                $('[data-filtervalue]').click(function () {
-                    var newFilter = $('option:selected', this).attr('data-filtervalue');
-                    localStorage.setItem('filter', newFilter);
-                    viewModel.filterProjectsBy(newFilter);
-                    $('[data-filtervalue] .icon-ok').addClass('hide');
-                    $('[data-filtervalue="' + newFilter + '"] .icon-ok').removeClass('hide');
-                    window.location.reload();
-                   
-                });*/
-
-
-
-
-
-                //if (releasefiltersort)
-                //    $('[releaseData-filtervalue="' + releasefiltersort + '"] .icon-ok').removeClass('hide');
-
-                //$('[releaseData-filtervalue]').unbind('click');
-
-                //$('[releaseData-filtervalue]').click(function () {
-                //    var newReleaseFilter = $(this).attr('releaseData-filtervalue');
-                //    localStorage.setItem('releasefilter', newReleaseFilter);
-                //    viewModel.filterReleasesBy(newReleaseFilter);
-                //    $('[releaseData-filtervalue] .icon-ok').addClass('hide');
-                //    $('[releaseData-filtervalue="' + newReleaseFilter + '"] .icon-ok').removeClass('hide');
-                //    window.location.reload();
-                //});
-                // now copy the users from the view model into the array of users waiting for data so we can loop over them
-                // without disturbing the original view model
-
-
-                //$.when(viewModel.filterProjectsBy(), viewModel.filterReleasesBy()).done(function (filterprojects, filterreleases)
-                //{
                 myOnTimeTeam.getUsersData(viewModel);
            
 

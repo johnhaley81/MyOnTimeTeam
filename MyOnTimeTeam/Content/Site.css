@@ -828,10 +828,24 @@ tr.pager td {
 
 
 /* Filter bar*/
-.filterBar{
+.controlBar{
     margin-top: 0em;
     text-align: center;
     background-color: #6BC466;
-    border-radius: 1em;
     padding-top: 0.25em;
+}
+
+.topBar {
+    display:block;
+    margin-right:0%;
+    margin-left:auto;
+    text-align:right;
+}
+
+.userObject{
+    color:white;
+    margin-top:50%;
+    background-color:hotpink;
+    border-radius:0.5em;
+    
 }

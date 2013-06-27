@@ -35,6 +35,11 @@ namespace MyOnTimeTeam.Controllers
             return View();
         }
 
+        public ActionResult About()
+        {
+            return PartialView();
+        }
+
 
     }
 }
