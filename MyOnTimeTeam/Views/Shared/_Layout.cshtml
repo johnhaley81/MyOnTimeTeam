@@ -65,15 +65,6 @@
 
 
 
-                    var sort = window.localStorage.getItem('sort') || 'name'; //name, work
-                    $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
-                    $('[data-sortValue]').click(function () {
-                        var newSort = $(this).attr('data-sortValue');
-                        localStorage.setItem('sort', newSort);
-                        viewModel.sortBy(newSort);
-                        $('[data-sortValue] .icon-ok').addClass('hide');
-                        $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
-                    });
 
 
                

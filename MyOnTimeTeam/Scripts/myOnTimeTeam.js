@@ -320,17 +320,17 @@
                         found = true;
                 }
                     if (!found || viewModel.showHidden()) {
-                        this.getUserDataCalls(viewModel.users()[i], viewModel);
+                        this.getUserDataCalls(viewModel, i);
                     }
                 }
 
             },
 
 
-        getUserDataCalls: function (user, viewModel) {
-                 $.when(myOnTimeTeam.getItemDetailsForUser('defects', user.id, viewModel)
-                , myOnTimeTeam.getItemDetailsForUser('features', user.id, viewModel)
-                , myOnTimeTeam.getItemDetailsForUser('incidents', user.id, viewModel))
+        getUserDataCalls: function (viewModel, index) {
+            $.when(myOnTimeTeam.getItemDetailsForUser('defects', viewModel.users()[index].id, viewModel)
+                , myOnTimeTeam.getItemDetailsForUser('features', viewModel.users()[index].id, viewModel)
+                , myOnTimeTeam.getItemDetailsForUser('incidents', viewModel.users()[index].id, viewModel))
             .done(function (defects, features, incidents) {
                 var getCount = function (itemType) {
                     if (itemType && itemType.metadata) {
@@ -349,13 +349,13 @@
                 };
 
                 // Update the data for this user in the viewModel knockout object
-                user.defectsCount(getCount(defects));
-                user.featuresCount(getCount(features));
-                user.incidentsCount(getCount(incidents));
-                user.workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
+                viewModel.users()[index].defectsCount(getCount(defects));
+                viewModel.users()[index].featuresCount(getCount(features));
+                viewModel.users()[index].incidentsCount(getCount(incidents));
+                viewModel.users()[index].workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
                     + getWorkRemainingMinutes(features)
                     + getWorkRemainingMinutes(incidents))));
-                user.dataLoaded(true);
+                viewModel.users()[index].dataLoaded(true);
             })
             .fail(function () {
             })
