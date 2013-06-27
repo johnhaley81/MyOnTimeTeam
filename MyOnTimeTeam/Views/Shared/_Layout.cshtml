@@ -82,6 +82,16 @@
                         <p data-bind="text: apiAlertMessage"></p>
                     </div>
                 </div>
+                
+                <div class="modal hide fade" id="errorModal">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3>Error</h3>
+                    </div>
+                    <div class="modal-body" style="text-align:center;">
+                        <p>There was an error processing your request. Your API call limit may have been reached for the day.</p>
+                    </div>
+                </div>
             }
             else
             {

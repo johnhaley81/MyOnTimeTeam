@@ -434,7 +434,12 @@
                 }
                 myOnTimeTeam.apiCache[request.url] = response;
                 request.deferredResponse.resolve(response);
+            }).fail( function (response) {
+                
+                $('#errorModal').modal({ show: true });
             });
+
+            
         },
 
         apiQueue: []
