@@ -62,6 +62,8 @@
         this.workRemaining = ko.computed(function () {
             return Math.round(this.workRemainingMinutes() / 60) + " Hours";
         }, this);
+
+       
     };
 
    	//null means no users are currently being processed.
@@ -145,6 +147,7 @@
 
             return userModels;
         },
+
 
         refreshData: function () {
             var viewModel = {}
@@ -466,7 +469,7 @@
         root.value = root.id;
         for (var i = 0 ; i < indentLevel ; i++)
         {
-            root.name = "\xA0" + root.name;
+            root.name = "\xA0\xA0" + root.name;
         }
         projarray.push(root);
         if (root.hasOwnProperty('children')) {

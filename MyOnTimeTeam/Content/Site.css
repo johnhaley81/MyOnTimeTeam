@@ -842,3 +842,40 @@ tr.pager td {
 .alignright{
     text-align:right;
 }
+
+.filterLabel{
+    font-size:12px;
+    text-align:center;
+    padding: 0px 0px 0px 0px;
+    margin-bottom:0px;
+}
+
+.filterSelect select {
+    text-align:center;
+    width:100%;
+    font-size:small;
+    padding: 0px 0px 0px 0px;
+    height:20px;
+    
+}
+
+#containerBar {
+    background-color:#333;
+    color:white;
+    padding: 0px 10px 0px 10px
+}
+
+
+
+.navbar-inverse .borderOverride {
+    border-radius:0px;
+}
+
+.selectBars{
+    padding: 0px 0px 0px 0px;
+}
+
+.media-object.thumbnail{
+    height:80px;
+    width:80px;
+}

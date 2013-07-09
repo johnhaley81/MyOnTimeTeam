@@ -40,7 +40,7 @@
 <body>
 
     <div class="navbar navbar-inverse">
-        <div class="navbar-inner">
+        <div class="navbar-inner borderOverride">
             <a class="brand active" href="~/">My OnTime Team</a>
             @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
@@ -53,6 +53,50 @@
                         <span id="userName"></span></span>
                     <ul class="nav">
                         <li><a href="#" id="aboutButton">About</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings<i class="icon-caret-down icon-white"></i></a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                <li id="showHidden"><a href="#">Show Hidden Users
+                                   
+                                    <span class="hide icon icon-ok"></span>
+                                </a></li>
+                                <li id="showInactive"><a href="#">Show Inactive Users
+                                   
+                                    <span class="hide icon icon-ok"></span>
+                                </a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-submenu">
+                                    <a href="#">Sort by</a>
+                                    <ul class="dropdown-menu">
+                                        <li data-sortvalue="name"><a href="#">User Name
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <li data-sortvalue="work"><a href="#">Work Remaining
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <li data-sortvalue="defects"><a href="#">Defect Count
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+
+                                        <li data-sortvalue="features"><a href="#">Feature Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+
+                                        <li data-sortvalue="incidents"><a href="#">Incident Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+
+                                        <li data-sortvalue="items"><a href="#">Item Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
 
                     <a class="btn btn-primary btn-small" id="logoutButton">Logout</a>
@@ -71,6 +115,37 @@
                     $('#aboutButton').click(function () {
                         $.modalPopup('@Utils.GetSiteRoot()/home/about');
                     });
+
+                    var sort = window.localStorage.getItem('sort') || 'name'; //name, work
+                    $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
+                    $('[data-sortValue]').click(function () {
+                        var newSort = $(this).attr('data-sortValue');
+                        localStorage.setItem('sort', newSort);
+                        viewModel.sortBy(newSort);
+                        $('[data-sortValue] .icon-ok').addClass('hide');
+                        $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
+                    });
+
+                    $('#showHidden .icon-ok').toggleClass('hide',
+                          localStorage.getItem("showHidden") !== "true"
+                      );
+                    $('#showHidden a').click(function () {
+                        var newShow = localStorage.getItem("showHidden") !== "true";
+                        $('#showHidden .icon-ok').toggleClass('hide', !newShow)
+                        localStorage.setItem("showHidden", newShow);
+                        viewModel.showHidden(newShow);
+                        window.myOnTimeTeam.getUsersData(viewModel);
+                    });
+
+                    $('#showInactive .icon-ok').toggleClass('hide',
+                       localStorage.getItem("showInactive") !== "true"
+                   );
+                    $('#showInactive a').click(function () {
+                        var newShow = localStorage.getItem("showInactive") !== "true";
+                        $('#showInactive .icon-ok').toggleClass('hide', !newShow);
+                        viewModel.showInactive(newShow);
+                    });
+
                 </script>
 
                 <div class="modal hide fade" id="apiModal">
@@ -88,7 +163,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h3>Error</h3>
                     </div>
-                    <div class="modal-body" style="text-align:center;">
+                    <div class="modal-body" style="text-align: center;">
                         <p>There was an error processing your request. Your API call limit may have been reached for the day.</p>
                     </div>
                 </div>
@@ -102,92 +177,59 @@
         @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
         {
-            <div class="container accordion" id="containerBar">
-                <div class="accordion-group">
-                    <div class="accordion-heading controlBar">
-                        <a class="accordion-toggle alignright" data-toggle="collapse" data-parent="#containerBar" href="#filterCollapse" id="iconChangeToggle"><span class="icon-chevron-up" id="chevronUp"></span><span class="icon-chevron-down hide" id="chevronDown"></span></a>
-                    </div>
-                    <div class="controlBar accordion-body collapse in" id="filterCollapse">
-                        <div class="row-fluid filterBar">
-                            <div class="span7">
-                                <div class="row-fluid">
+            <div class="navbar" id="containerBar">
 
-                                    <div class="span4">
+                <div class="row-fluid filterBar">
+                    <div class="span7 selectBars">
+                        <div class="row-fluid">
 
-                                        <label>
-                                            <!-- ko text: itemTypes()[0] -->
-                                            <!-- /ko -->
-                                        </label>
-                                        <!-- populates defect filter-->
-                                        <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
-                                    </div>
+                            <div class="span4 selectBars">
 
-                                    <div class="span4">
-                                        <label>
-                                            <!-- ko text: itemTypes()[1] -->
-                                            <!-- /ko -->
-                                        </label>
-                                        <!-- populates features filter-->
-                                        <select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
-                                    </div>
-                                    <div class="span4">
-                                        <label>
-                                            <!-- ko text: itemTypes()[2] -->
-                                            <!-- /ko -->
-                                        </label>
-                                        <!-- populates incidents filter -->
-                                        <select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
-                                    </div>
+                                <label class="filterLabel">
+                                    <span data-bind= "text:itemTypes()[0]">&nbsp;</span>
+                                   
+                                </label>
+                                <!-- populates defect filter-->
+                                <div class="filterSelect">
+                                    <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
                                 </div>
                             </div>
-                            <div class="span5">
-                                <div class="row-fluid">
-                                    <div class="span6">
-                                        <label>Projects</label>
-                                        <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
-                                    </div>
-                                    <div class="span6">
-                                        <label>Releases</label>
-                                        <select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
-                                    </div>
-                                </div>
-                            </div>
+
+                            <div class="span4 selectBars">
+                                <label class="filterLabel">
+                                    <span data-bind= "text: itemTypes()[1]">&nbsp;</span>
+                                </label>
+                                <!-- populates features filter-->
+                                <div class="filterSelect"><select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
+                           </div>
+                                     </div>
+                            <div class="span4 selectBars">
+                                <label class="filterLabel">
+                                    <span data-bind= "text: itemTypes()[2]">&nbsp;</span>
+                                </label>
+                                <!-- populates incidents filter -->
+                                <div class="filterSelect"><select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
+                           </div>
+                                     </div>
                         </div>
-                        <div class="row-fluid miscBar">
-                            <div class="span7 text-center">
-                                <div class="span6">
-                                    <br />
-                                    <label class="checkbox inline">
-                                        <input type="checkbox" id="showHidden" data-bind="checked: showHidden" />Show Hidden Users
-                                    </label>
-                                </div>
-                                <div class="span6">
-                                    <br />
-                                    <label class="checkbox inline">
-                                        <input type="checkbox" id="showInactive" data-bind="checked: showInactive" />Show Inactive Users</label>
-                                </div>
-                            </div>
-                            <div class="span5 text-center">
-                                <label>Sort By</label>
-                                <select data-bind="value: sortBy">
-                                    <option value="name">User Name
-                                    </option>
-                                    <option value="work">Work Remaining
-                                    </option>
-                                    <option value="defects">Defect Count
-                                    </option>
-                                    <option value="features">Feature Count
-                                    </option>
-                                    <option value="incidents">Incident Count
-                                    </option>
-                                    <option value="items">Item Count
-                                    </option>
-                                </select>
-                            </div>
+                    </div>
+                    <div class="span5 selectBars">
+                        <div class="row-fluid">
+                            <div class="span6 selectBars">
+                                <label class="filterLabel">Projects</label>
+                               <div class="filterSelect"> <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
+                            </div></div>
+                            <div class="span6 selectBars">
+                                <label class="filterLabel">Releases</label>
+                                <div class="filterSelect"><select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
+                            </div></div>
                         </div>
                     </div>
                 </div>
+
+
             </div>
+              
         }
     </div>
 
