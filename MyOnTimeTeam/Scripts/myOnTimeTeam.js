@@ -42,6 +42,18 @@
 
         this.incidentsCount = ko.observable(0);
 
+        this.defectsShow = ko.computed(function () {
+            return this.defectsCount().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }, this);
+
+        this.featuresShow = ko.computed(function () {
+            return this.featuresCount().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }, this);
+
+        this.incidentsShow = ko.computed(function () {
+            return this.incidentsCount().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }, this);
+
         this.itemsCount = ko.computed(function () {
             return this.defectsCount() + this.featuresCount() + this.incidentsCount();
         }, this);
@@ -282,7 +294,8 @@
                     }
                 }
             },
-
+        
+     
         getUserDataCalls: function (viewModel, index) {
             $.when(myOnTimeTeam.getItemDetailsForUser('defects', viewModel.users()[index].id, viewModel)
                 , myOnTimeTeam.getItemDetailsForUser('features', viewModel.users()[index].id, viewModel)
@@ -308,9 +321,9 @@
                 viewModel.users()[index].defectsCount(getCount(defects));
                 viewModel.users()[index].featuresCount(getCount(features));
                 viewModel.users()[index].incidentsCount(getCount(incidents));
-                viewModel.users()[index].workRemainingMinutes(Math.round((getWorkRemainingMinutes(defects)
+                viewModel.users()[index].workRemainingMinutes(Math.round(getWorkRemainingMinutes(defects)
                     + getWorkRemainingMinutes(features)
-                    + getWorkRemainingMinutes(incidents))));
+                    + getWorkRemainingMinutes(incidents)));
                 viewModel.users()[index].dataLoaded(true);
             })
             .fail(function () {
@@ -332,7 +345,7 @@
         },
 
         getItemDetailsForUser: function (itemType, userId, viewModel) {
-            var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&include_sub_project_items=true&columns=project,release&user_id=' + userId);
+            var target = this.getApiUrl(itemType, '&page=1&page_size=0&group_field=assigned_to_name&include_sub_projects_items=true&include_sub_releases_items=true&columns=project,release&user_id=' + userId);
 
             if (!(viewModel.filterProjectsBy() === 'nofilter'))//if the ID isn't nofilter
                 if (!(typeof viewModel.filterProjectsBy() === 'undefined'))//if the ID isn't undefined
@@ -451,7 +464,10 @@
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
-
+        for (var i = 0 ; i < indentLevel ; i++)
+        {
+            root.name = "\xA0" + root.name;
+        }
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
             if (root.children != null) {
