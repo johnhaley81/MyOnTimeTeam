@@ -87,7 +87,7 @@ namespace MyOnTimeTeam.Controllers
                     return Redirect("/accounts/tokenRedirect");
                 }
             }
-            catch (WebException)
+            catch (WebException e)
             {
                 return Redirect("LoginFailed");
             }
@@ -103,7 +103,7 @@ namespace MyOnTimeTeam.Controllers
             return View();
         }
 
-        private string getRedirectUri()
+        public string getRedirectUri()
         {
             return Utils.GetSiteRoot() + "/accounts/receive_code";
             //

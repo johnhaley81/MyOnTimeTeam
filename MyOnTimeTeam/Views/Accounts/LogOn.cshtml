@@ -25,26 +25,35 @@
                 @Html.ValidationMessageFor(model => model.OnTimeUrl)
             </div>
         </fieldset>
-
-        @section Scripts {
-            @Scripts.Render("~/bundles/jqueryval")
-
-        }
     </div>
     <div class="modal-footer">
         <input class="btn" type="button" data-dismiss="modal" value="Close" />
         <input class="btn btn-primary" id="modallogin" type="button" value="Login" />
     </div>
+    
+    @Scripts.Render("~/bundles/jqueryval")
+
     <script>
+        
+        var buildOnTimeUrl = function (url) {
+            if( url.indexOf("https://") === -1 && url.indexOf("http://") === -1)
+                url = "https://" + url;
+
+
+            return url;
+        };
+
+
         $('#modallogin').click(function () {
-            $.ajax({
-                type: 'POST',
-                url: '/accounts/OnTimeAuth',
-                data: $('.modal-form').serialize(),
-                success: function (data, textStatus, jqXHR) {
-                    $('.modal-form').replaceWith('<iframe id="loginFrame" src=\"' + data + '\" style=\"height:100%;width:99.3%;display:block;\"></iframe>');
-                }
-            });
+          //  $.ajax({
+             //   type: 'POST',
+              //  url: '/accounts/OnTimeAuth',
+             //   data: $('.modal-form').serialize(),
+             //   success: function (data, textStatus, jqXHR) {
+                   // $('.modal-form').replaceWith('<iframe id="loginFrame" src=\"' + data + '\" style=\"height:100%;width:99.3%;display:block;\"></iframe>');
+                    window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
+               // }
+           // });
         });
 
         function disableEnterKey(e) {
