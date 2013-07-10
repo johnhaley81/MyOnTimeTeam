@@ -879,3 +879,7 @@ tr.pager td {
     height:80px;
     width:80px;
 }
+
+#masterDropdown{
+    text-align: left;
+}
