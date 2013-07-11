@@ -74,11 +74,11 @@
         apiCache : {},
 
         initializeViewModel: function (viewModel) {
-            viewModel.defectId = ko.observable(0);
-            viewModel.featureId = ko.observable(0);
-            viewModel.incidentId = ko.observable(0);
-            viewModel.projectId = ko.observable(0);
-            viewModel.releaseId = ko.observable(0);
+            viewModel.defectId = ko.observable(window.localStorage.getItem('defectfilter') || "0");
+            viewModel.featureId = ko.observable(window.localStorage.getItem('featurefilter') || "0");
+            viewModel.incidentId = ko.observable(window.localStorage.getItem('incidentfilter') || "0");
+            viewModel.projectId = ko.observable(window.localStorage.getItem('filter') || "0");
+            viewModel.releaseId = ko.observable(window.localStorage.getItem('releasefilter') || "0");
             viewModel.apiAlertMessage = ko.observable("empty");
 
             return viewModel;
@@ -229,35 +229,46 @@
                 }, viewModel);
                 viewModel.updateProject = ko.computed(function () {
                     var newFilter = this.projectId();
-                    localStorage.setItem('filter', newFilter);
                     viewModel.filterProjectsBy(newFilter);
                     myOnTimeTeam.getUsersData(viewModel);
+                    $('.projectlist :selected').removeAttr('select');
+                    $(".projectlist [value='" + newFilter + "']").attr('select', 'select');
+                    localStorage.setItem('filter', $('.projectlist :selected').val());
                 }, viewModel);
 
                 viewModel.updateRelease = ko.computed(function () {
                     var newReleaseFilter = this.releaseId();
-                    localStorage.setItem('releasefilter', newReleaseFilter);
                     viewModel.filterReleasesBy(newReleaseFilter);
                     myOnTimeTeam.getUsersData(viewModel);
+                    $('.releaselist :selected').removeAttr('select');
+                    $(".releaselist [value='" + newReleaseFilter + "']").attr('select', 'select');
+                    localStorage.setItem('releasefilter', $('.releaselist :selected').val());
                 }, viewModel);
 
                 viewModel.updateDefect = ko.computed(function () {
                     var newDefectFilter = this.defectId();
-                    localStorage.setItem('defectfilter', newDefectFilter);
-                    viewModel.filterDefectsBy(newDefectFilter);
-                    myOnTimeTeam.getUsersData(viewModel);
+                        viewModel.filterDefectsBy(newDefectFilter);
+                        myOnTimeTeam.getUsersData(viewModel);
+                        $('.defectlist :selected').removeAttr('select');
+                        $(".defectlist [value='" + newDefectFilter + "']").attr('select', 'select');
+                        localStorage.setItem('defectfilter', $('.defectlist :selected').val());
+                    
                 }, viewModel);
                 viewModel.updateFeature = ko.computed(function () {
                     var newFeatureFilter = this.featureId();
-                    localStorage.setItem('featurefilter', newFeatureFilter);
                     viewModel.filterFeaturesBy(newFeatureFilter);
                     myOnTimeTeam.getUsersData(viewModel);
+                    $('.featurelist :selected').removeAttr('select');
+                    $(".featurelist [value='" + newFeatureFilter + "']").attr('select', 'select');
+                    localStorage.setItem('featurefilter', $('.featurelist :selected').val());
                 }, viewModel);
                 viewModel.updateIncident = ko.computed(function () {
                     var newIncidentFilter = this.incidentId();
-                    localStorage.setItem('incidentfilter', newIncidentFilter);
                     viewModel.filterIncidentsBy(newIncidentFilter);
                     myOnTimeTeam.getUsersData(viewModel);
+                    $('.incidentlist :selected').removeAttr('select');
+                    $(".incidentlist [value='" + newIncidentFilter + "']").attr('select', 'select');
+                    localStorage.setItem('incidentfilter', $('.incidentlist :selected').val());
                 }, viewModel);
 
                 viewModel.updateInactiveUsers = ko.computed(function () {

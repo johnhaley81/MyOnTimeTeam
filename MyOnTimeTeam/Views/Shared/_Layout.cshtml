@@ -35,6 +35,13 @@
             window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
             window.localStorage.setItem('apiCallCounter', 0);
         }
+
+        if (window.localStorage.getItem('defectfilter') !== null || window.localStorage.getItem('defectfilter') !== 0) {
+            var newDefectFilter = window.localStorage.getItem('defectfilter');
+            $('.defectlist[select]').removeAttr('select');
+            if (newDefectFilter !== 0)
+                $(".defectlist [value='" + newDefectFilter + "']").attr('select', 'select');
+        }
     </script>
 </head>
 <body>
@@ -146,6 +153,8 @@
                         viewModel.showInactive(newShow);
                     });
 
+              
+
                 </script>
 
                 <div class="modal hide fade" id="apiModal">
@@ -190,7 +199,7 @@
                                    
                                 </label>
                                 <!-- populates defect filter-->
-                                <div class="filterSelect">
+                                <div class="filterSelect defectlist">
                                     <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
                                 </div>
                             </div>
@@ -200,7 +209,7 @@
                                     <span data-bind= "text: itemTypes()[1]">&nbsp;</span>
                                 </label>
                                 <!-- populates features filter-->
-                                <div class="filterSelect"><select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
+                                <div class="filterSelect featurelist"><select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
                            </div>
                                      </div>
                             <div class="span4 selectBars">
@@ -208,7 +217,7 @@
                                     <span data-bind= "text: itemTypes()[2]">&nbsp;</span>
                                 </label>
                                 <!-- populates incidents filter -->
-                                <div class="filterSelect"><select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
+                                <div class="filterSelect incidentlist"><select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
                            </div>
                                      </div>
                         </div>
@@ -217,11 +226,11 @@
                         <div class="row-fluid">
                             <div class="span6 selectBars">
                                 <label class="filterLabel">Projects</label>
-                               <div class="filterSelect"> <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
+                               <div class="filterSelect projectlist"> <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
                             </div></div>
                             <div class="span6 selectBars">
                                 <label class="filterLabel">Releases</label>
-                                <div class="filterSelect"><select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
+                                <div class="filterSelect releaselist"><select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
                             </div></div>
                         </div>
                     </div>
