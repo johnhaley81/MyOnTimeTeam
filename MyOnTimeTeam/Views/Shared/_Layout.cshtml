@@ -106,7 +106,7 @@
                         </li>
                     </ul>
 
-                    <a class="btn btn-primary btn-small" id="logoutButton">Logout</a>
+                    <a class="btn btn-primary btn-small logoutButton" >Logout</a>
                 </div>
                 <script>
                     window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
@@ -179,7 +179,7 @@
             }
             else
             {
-                <a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
+                <a class="btn btn-primary btn-small pull-right loginButton">Login</a>
             }
         </div>
 
@@ -248,18 +248,19 @@
     {
         <div class="welcome">
             <p>@ViewBag.message</p>
+            <button class="btn btn-primary loginButton" type="button">Login</button>
         </div>
     }
 
     @RenderSection("scripts", required: false)
     <script>
-        if ($('#loginButton')) {
-            $('#loginButton').click(function () {
+        if ($('.loginButton')) {
+            $('.loginButton').click(function () {
                 $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
             });
         }
-        if ($('#logoutButton')) {
-            $('#logoutButton').click(function () {
+        if ($('.logoutButton')) {
+            $('.logoutButton').click(function () {
                 document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
                 document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
 

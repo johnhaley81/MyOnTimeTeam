@@ -21,7 +21,7 @@
                 @Html.LabelFor(model => model.OnTimeUrl)
             </div>
             <div class="editor-field" onkeypress="return disableEnterKey(event)">
-                @Html.EditorFor(model => model.OnTimeUrl)
+               <div id="urlTextBox">@Html.EditorFor(model => model.OnTimeUrl)</div>
                 @Html.ValidationMessageFor(model => model.OnTimeUrl)
             </div>
         </fieldset>
@@ -45,17 +45,10 @@
             return url;
         };
 
-
         $('#modallogin').click(function () {
-          //  $.ajax({
-             //   type: 'POST',
-              //  url: '/accounts/OnTimeAuth',
-             //   data: $('.modal-form').serialize(),
-             //   success: function (data, textStatus, jqXHR) {
-                   // $('.modal-form').replaceWith('<iframe id="loginFrame" src=\"' + data + '\" style=\"height:100%;width:99.3%;display:block;\"></iframe>');
+      
                     window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
-               // }
-           // });
+            
         });
 
         function disableEnterKey(e) {
@@ -65,7 +58,9 @@
             else
                 key = e.which; //firefox
 
-            return (key != 13);
+            if (key === 13)
+                $('#modallogin').click();
+
         }
     </script>
 
