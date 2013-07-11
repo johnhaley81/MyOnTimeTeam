@@ -91,12 +91,12 @@
             return viewModel;
         },
 
-        populateItemNames: function (defects, features, incidents, tasks) {
+        populateItemNames: function (settings) {
             var name = [];
-            name.push( defects.data[0].filter_type);
-            name.push(features.data[0].filter_type);
-            name.push(incidents.data[0].filter_type);
-            name.push(tasks.data[0].filter_type);
+            name.push(settings.item_types.defects.p_label);
+            name.push(settings.item_types.features.p_label);
+            name.push(settings.item_types.incidents.p_label);
+            name.push(settings.item_types.tasks.p_label);
 
             for (var i = 0; i<name.length ; i++)
                 name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
@@ -185,7 +185,7 @@
             var viewModel = {}
             viewModel = window.myOnTimeTeam.initializeViewModel(viewModel);
 
-            $.when(this.getUsersList(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents'), this.getFilters('tasks')).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse, taskFilterResponse) {
+            $.when(this.getUsersList(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents'), this.getFilters('tasks'), this.getSettings()).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse, taskFilterResponse, settingsResponse) {
                 if (!usersResponse || !usersResponse.data)
                     return;
 
@@ -207,7 +207,7 @@
                 if (!taskFilterResponse || !taskFilterResponse.data)
                     return;
 
-                var nameArray = window.myOnTimeTeam.populateItemNames(defectFilterResponse, featureFilterResponse, incidentFilterResponse, taskFilterResponse);
+                var nameArray = window.myOnTimeTeam.populateItemNames(settingsResponse);
                 var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse, 'Defects');
                 var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, 'Features');
                 var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse, 'Incidents');
@@ -467,6 +467,10 @@
 
         getReleases: function () {
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', ''), {});
+        },
+
+        getSettings: function () {
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('settings', ''), {});
         },
 
         makeApiCall: function (url) {
