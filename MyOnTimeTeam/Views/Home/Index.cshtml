@@ -29,6 +29,10 @@
                             <!-- ko text: incidentsShow -->
                             <!-- /ko -->
                         </span>
+                        <span data-bind="visible: tasksShow() !== '0'" class="label label-success">Tasks:
+                            <!-- ko text: tasksShow -->
+                            <!-- /ko -->
+                        </span>
                     </div>
                     <div>
                         <span>Estimated work remaining:

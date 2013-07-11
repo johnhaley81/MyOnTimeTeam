@@ -42,6 +42,8 @@
 
         this.incidentsCount = ko.observable(0);
 
+        this.tasksCount = ko.observable(0);
+
         this.defectsShow = ko.computed(function () {
             return this.defectsCount().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }, this);
@@ -54,8 +56,12 @@
             return this.incidentsCount().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }, this);
 
+        this.tasksShow = ko.computed(function () {
+            return this.tasksCount().toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }, this);
+
         this.itemsCount = ko.computed(function () {
-            return this.defectsCount() + this.featuresCount() + this.incidentsCount();
+            return this.defectsCount() + this.featuresCount() + this.incidentsCount() + this.tasksCount();
         }, this);
 
         this.workRemainingMinutes = ko.observable(0);
@@ -77,6 +83,7 @@
             viewModel.defectId = ko.observable(window.localStorage.getItem('defectfilter') || "0");
             viewModel.featureId = ko.observable(window.localStorage.getItem('featurefilter') || "0");
             viewModel.incidentId = ko.observable(window.localStorage.getItem('incidentfilter') || "0");
+            viewModel.taskId = ko.observable(window.localStorage.getItem('taskfilter') || "0");
             viewModel.projectId = ko.observable(window.localStorage.getItem('filter') || "0");
             viewModel.releaseId = ko.observable(window.localStorage.getItem('releasefilter') || "0");
             viewModel.apiAlertMessage = ko.observable("empty");
@@ -84,11 +91,12 @@
             return viewModel;
         },
 
-        populateItemNames: function (defects, features, incidents) {
+        populateItemNames: function (defects, features, incidents, tasks) {
             var name = [];
             name.push( defects.data[0].filter_type);
             name.push(features.data[0].filter_type);
             name.push(incidents.data[0].filter_type);
+            name.push(tasks.data[0].filter_type);
 
             for (var i = 0; i<name.length ; i++)
                 name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
@@ -104,20 +112,44 @@
                 id: 0
             };
 
-            itemArray.push(none);
+            var separator = {
+                name: "----------------",
+            id: -1
+        };
 
-            for (var i = 0 ; i < itemResponse.data.length ; i++)
-                itemArray.push(itemResponse.data[i]);
+            //create the nofilter option and a separator
+    itemArray.push(none);
+    itemArray.push(separator);
+
+            //add all the private filters
+    for (var i = 0 ; i < itemResponse.data.length ; i++) {
+        if (itemResponse.data[i].private) {
+            itemArray.push(itemResponse.data[i]);
+        }
+    }
+
+            //if any private filters exist, add another separator
+    if (itemArray.length > 2) {
+        itemArray.push(separator);
+    }
+
+            //push any public filters onto the list
+    for (var j = 0 ; j < itemResponse.data.length ; j++) {
+        if (!itemResponse.data[j].private) {
+            itemArray.push(itemResponse.data[j]);
+        }
+    }
 
             return itemArray;
         },
 
-        populateItemFilterArray: function (defectArray, featureArray, incidentArray) {
+        populateItemFilterArray: function (defectArray, featureArray, incidentArray, taskArray) {
             var itemArray = [];
 
             itemArray.push(defectArray);
             itemArray.push(featureArray);
             itemArray.push(incidentArray);
+            itemArray.push(taskArray);
 
             return itemArray;
         },
@@ -153,7 +185,7 @@
             var viewModel = {}
             viewModel = window.myOnTimeTeam.initializeViewModel(viewModel);
 
-            $.when(this.getUsersList(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents')).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse) {
+            $.when(this.getUsersList(), this.getProjects(), this.getReleases(), this.getFilters('defects'), this.getFilters('features'), this.getFilters('incidents'), this.getFilters('tasks')).done(function (usersResponse, projectsResponse, releasesResponse, defectFilterResponse, featureFilterResponse, incidentFilterResponse, taskFilterResponse) {
                 if (!usersResponse || !usersResponse.data)
                     return;
 
@@ -172,11 +204,15 @@
                 if (!incidentFilterResponse || !incidentFilterResponse.data)
                     return;
 
-                var nameArray = window.myOnTimeTeam.populateItemNames(defectFilterResponse, featureFilterResponse, incidentFilterResponse);
+                if (!taskFilterResponse || !taskFilterResponse.data)
+                    return;
+
+                var nameArray = window.myOnTimeTeam.populateItemNames(defectFilterResponse, featureFilterResponse, incidentFilterResponse, taskFilterResponse);
                 var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse, 'Defects');
                 var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, 'Features');
                 var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse, 'Incidents');
-                var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray);
+                var taskFilterArray = window.myOnTimeTeam.populateFilterArray(taskFilterResponse, 'Tasks');
+                var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray, taskFilterArray);
                 var projectArray = window.myOnTimeTeam.populateDesignArray(projectsResponse, 'Projects');
                 var releaseArray = window.myOnTimeTeam.populateDesignArray(releasesResponse, 'Releases');
 
@@ -193,6 +229,7 @@
                 viewModel.filterDefectsBy = ko.observable(window.localStorage.getItem('defectfilter') || "nofilter");
                 viewModel.filterFeaturesBy = ko.observable(window.localStorage.getItem('featurefilter') || "nofilter");
                 viewModel.filterIncidentsBy = ko.observable(window.localStorage.getItem('incidentfilter') || "nofilter");
+                viewModel.filterTasksBy = ko.observable(window.localStorage.getItem('taskfilter') || "nofilter");
 
                 var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
                 viewModel.users = ko.observableArray(userModels);
@@ -217,6 +254,7 @@
                         case 'defects':
                         case 'features':
                         case 'incidents':
+                        case 'tasks':
                         case 'items':
                             sortFn = function (a, b) {
                                 return a.getCount(sortType)() > b.getCount(sortType)() ? -1 :
@@ -247,28 +285,46 @@
 
                 viewModel.updateDefect = ko.computed(function () {
                     var newDefectFilter = this.defectId();
+                    if (newDefectFilter !== '-1') {
                         viewModel.filterDefectsBy(newDefectFilter);
                         myOnTimeTeam.getUsersData(viewModel);
                         $('.defectlist :selected').removeAttr('select');
                         $(".defectlist [value='" + newDefectFilter + "']").attr('select', 'select');
                         localStorage.setItem('defectfilter', $('.defectlist :selected').val());
+                    }
                     
                 }, viewModel);
                 viewModel.updateFeature = ko.computed(function () {
                     var newFeatureFilter = this.featureId();
-                    viewModel.filterFeaturesBy(newFeatureFilter);
-                    myOnTimeTeam.getUsersData(viewModel);
-                    $('.featurelist :selected').removeAttr('select');
-                    $(".featurelist [value='" + newFeatureFilter + "']").attr('select', 'select');
-                    localStorage.setItem('featurefilter', $('.featurelist :selected').val());
+                    if (newFeatureFilter !== '-1') {
+                        viewModel.filterFeaturesBy(newFeatureFilter);
+                        myOnTimeTeam.getUsersData(viewModel);
+                        $('.featurelist :selected').removeAttr('select');
+                        $(".featurelist [value='" + newFeatureFilter + "']").attr('select', 'select');
+                        localStorage.setItem('featurefilter', $('.featurelist :selected').val());
+                    }
                 }, viewModel);
+
                 viewModel.updateIncident = ko.computed(function () {
                     var newIncidentFilter = this.incidentId();
-                    viewModel.filterIncidentsBy(newIncidentFilter);
-                    myOnTimeTeam.getUsersData(viewModel);
-                    $('.incidentlist :selected').removeAttr('select');
-                    $(".incidentlist [value='" + newIncidentFilter + "']").attr('select', 'select');
-                    localStorage.setItem('incidentfilter', $('.incidentlist :selected').val());
+                    if (newIncidentFilter !== '-1') {
+                        viewModel.filterIncidentsBy(newIncidentFilter);
+                        myOnTimeTeam.getUsersData(viewModel);
+                        $('.incidentlist :selected').removeAttr('select');
+                        $(".incidentlist [value='" + newIncidentFilter + "']").attr('select', 'select');
+                        localStorage.setItem('incidentfilter', $('.incidentlist :selected').val());
+                    }
+                }, viewModel);
+
+                viewModel.updateTask = ko.computed(function () {
+                    var newTaskFilter = this.taskId();
+                    if (newTaskFilter !== '-1') {
+                        viewModel.filterTasksBy(newTaskFilter);
+                        myOnTimeTeam.getUsersData(viewModel);
+                        $('.tasklist :selected').removeAttr('select');
+                        $(".tasklist [value='" + newTaskFilter + "']").attr('select', 'select');
+                        localStorage.setItem('taskfilter', $('.tasklist :selected').val());
+                    }
                 }, viewModel);
 
                 viewModel.updateInactiveUsers = ko.computed(function () {
@@ -313,8 +369,9 @@
         getUserDataCalls: function (viewModel, index) {
             $.when(myOnTimeTeam.getItemDetailsForUser('defects', viewModel.users()[index].id, viewModel)
                 , myOnTimeTeam.getItemDetailsForUser('features', viewModel.users()[index].id, viewModel)
-                , myOnTimeTeam.getItemDetailsForUser('incidents', viewModel.users()[index].id, viewModel))
-            .done(function (defects, features, incidents) {
+                , myOnTimeTeam.getItemDetailsForUser('incidents', viewModel.users()[index].id, viewModel)
+                , myOnTimeTeam.getItemDetailsForUser('tasks', viewModel.users()[index].id, viewModel))
+            .done(function (defects, features, incidents, tasks) {
                 var getCount = function (itemType) {
                     if (itemType && itemType.metadata) {
                         return itemType.metadata.total_count;
@@ -335,9 +392,11 @@
                 viewModel.users()[index].defectsCount(getCount(defects));
                 viewModel.users()[index].featuresCount(getCount(features));
                 viewModel.users()[index].incidentsCount(getCount(incidents));
+                viewModel.users()[index].tasksCount(getCount(tasks));
                 viewModel.users()[index].workRemainingMinutes(Math.round(getWorkRemainingMinutes(defects)
                     + getWorkRemainingMinutes(features)
-                    + getWorkRemainingMinutes(incidents)));
+                    + getWorkRemainingMinutes(incidents)
+                    + getWorkRemainingMinutes(tasks)));
                 viewModel.users()[index].dataLoaded(true);
             })
             .fail(function () {
@@ -385,7 +444,11 @@
                     if (!(typeof viewModel.filterIncidentsBy() === 'undefined'))//if the ID isn't undefined
                         if (!(viewModel.filterIncidentsBy().toString() === '0'))
                             target = target + '&filter_id=' + viewModel.filterIncidentsBy();
-
+            if (itemType === 'tasks')
+                if (!(viewModel.filterTasksBy() === 'nofilter'))//if the ID isn't nofilter
+                    if (!(typeof viewModel.filterTasksBy() === 'undefined'))//if the ID isn't undefined
+                        if (!(viewModel.filterTasksBy().toString() === '0'))
+                            target = target + '&filter_id=' + viewModel.filterTasksBy();
             return window.myOnTimeTeam.makeApiCall(target);
         },
 
@@ -474,7 +537,7 @@
 
     window.setInterval(function () {
         myOnTimeTeam.processApiQueue();
-    }, 175);
+    }, 50);
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;

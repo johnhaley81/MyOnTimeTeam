@@ -35,13 +35,6 @@
             window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
             window.localStorage.setItem('apiCallCounter', 0);
         }
-
-        if (window.localStorage.getItem('defectfilter') !== null || window.localStorage.getItem('defectfilter') !== 0) {
-            var newDefectFilter = window.localStorage.getItem('defectfilter');
-            $('.defectlist[select]').removeAttr('select');
-            if (newDefectFilter !== 0)
-                $(".defectlist [value='" + newDefectFilter + "']").attr('select', 'select');
-        }
     </script>
 </head>
 <body>
@@ -92,6 +85,11 @@
                                         </a></li>
 
                                         <li data-sortvalue="incidents"><a href="#">Incident Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+
+                                        <li data-sortvalue="tasks"><a href="#">Task Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
@@ -192,11 +190,10 @@
                     <div class="span7 selectBars">
                         <div class="row-fluid">
 
-                            <div class="span4 selectBars">
+                            <div class="span3 selectBars">
 
                                 <label class="filterLabel">
                                     <span data-bind= "text:itemTypes()[0]">&nbsp;</span>
-                                   
                                 </label>
                                 <!-- populates defect filter-->
                                 <div class="filterSelect defectlist">
@@ -204,7 +201,7 @@
                                 </div>
                             </div>
 
-                            <div class="span4 selectBars">
+                            <div class="span3 selectBars">
                                 <label class="filterLabel">
                                     <span data-bind= "text: itemTypes()[1]">&nbsp;</span>
                                 </label>
@@ -212,7 +209,7 @@
                                 <div class="filterSelect featurelist"><select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
                            </div>
                                      </div>
-                            <div class="span4 selectBars">
+                            <div class="span3 selectBars">
                                 <label class="filterLabel">
                                     <span data-bind= "text: itemTypes()[2]">&nbsp;</span>
                                 </label>
@@ -220,6 +217,17 @@
                                 <div class="filterSelect incidentlist"><select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
                            </div>
                                      </div>
+                            <div class="span3 selectBars">
+
+                                <label class="filterLabel">
+                                    <span data-bind= "text: itemTypes()[3]">&nbsp;</span>
+                                </label>
+                                <!-- populates defect filter-->
+                                <div class="filterSelect tasklist">
+                                    <select data-bind="options: itemFilters()[3], optionsText: 'name', optionsValue: 'id', value: taskId "></select>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="span5 selectBars">
