@@ -118,10 +118,14 @@
         },
 
         populateFilterArray: function (itemResponse,name) {
+            if (name === undefined)
+                return;
+
             itemArray = [];
 
+            
             var none = {
-                name: "All " + name,
+                name: "All " + name.p_label,
                 id: 0
             };
 
@@ -234,10 +238,10 @@
                     return;
 
                 var nameArray = window.myOnTimeTeam.populateItemNames(settingsResponse);
-                var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse, 'Defects');
-                var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, 'Features');
-                var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse, 'Incidents');
-                var taskFilterArray = window.myOnTimeTeam.populateFilterArray(taskFilterResponse, 'Tasks');
+                var defectFilterArray = window.myOnTimeTeam.populateFilterArray(defectFilterResponse, settingsResponse.item_types.defects);
+                var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, settingsResponse.item_types.features);
+                var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse, settingsResponse.item_types.incidents);
+                var taskFilterArray = window.myOnTimeTeam.populateFilterArray(taskFilterResponse, settingsResponse.item_types.tasks);
                 var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray, taskFilterArray, settingsResponse);
                 var projectArray = window.myOnTimeTeam.populateDesignArray(projectsResponse, 'Projects');
                 var releaseArray = window.myOnTimeTeam.populateDesignArray(releasesResponse, 'Releases');
