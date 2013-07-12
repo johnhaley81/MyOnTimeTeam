@@ -851,7 +851,6 @@ tr.pager td {
 }
 
 .filterSelect select {
-    text-align:center;
     width:100%;
     font-size:small;
     padding: 0px 0px 0px 0px;

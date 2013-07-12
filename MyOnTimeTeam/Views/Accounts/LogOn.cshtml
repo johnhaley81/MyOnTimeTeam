@@ -37,16 +37,26 @@
         var buildOnTimeUrl = function (url) {
             if( url.indexOf("https://") === -1 && url.indexOf("http://") === -1)
                 url = "https://" + url;
+            
+            var origin = window.location.origin;
 
-            url = url + '/auth?response_type=code&client_id=d494ea05-1629-4d73-afd4-a6a0c9cfbd6a&redirect_uri=' + encodeURIComponent(window.location.origin + "/accounts/receive_code") + '&state=' + encodeURIComponent(url);
+            if (origin === undefined)
+                origin = window.location.href;
+            else
+                origin = origin + '/';
+            
 
+
+            url = url + '/auth?response_type=code&client_id=d494ea05-1629-4d73-afd4-a6a0c9cfbd6a&redirect_uri=' + encodeURIComponent(origin + "accounts/receive_code") + '&state=' + encodeURIComponent(url);
+            
 
             return url;
         };
 
         $('#modallogin').click(function () {
       
-                    window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
+           
+            window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
             
         });
 
