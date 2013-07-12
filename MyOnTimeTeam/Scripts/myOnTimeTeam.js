@@ -93,13 +93,26 @@
 
         populateItemNames: function (settings) {
             var name = [];
-            name.push(settings.item_types.defects.p_label);
-            name.push(settings.item_types.features.p_label);
-            name.push(settings.item_types.incidents.p_label);
-            name.push(settings.item_types.tasks.p_label);
+            if(settings.item_types.defects !== undefined)
+                name.push(settings.item_types.defects.p_label);
+            else
+                name.push("null");
 
-            for (var i = 0; i<name.length ; i++)
-                name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
+            if (settings.item_types.features !== undefined)
+                name.push(settings.item_types.features.p_label);
+            else
+                name.push("null");
+
+            if (settings.item_types.incidents !== undefined)
+                name.push(settings.item_types.incidents.p_label);
+            else
+                name.push("null");
+
+            if (settings.item_types.tasks !== undefined)
+                name.push(settings.item_types.tasks.p_label);
+            else
+                name.push("null");
+
 
             return name;
         },
@@ -143,13 +156,26 @@
             return itemArray;
         },
 
-        populateItemFilterArray: function (defectArray, featureArray, incidentArray, taskArray) {
+        populateItemFilterArray: function (defectArray, featureArray, incidentArray, taskArray, settings) {
             var itemArray = [];
 
-            itemArray.push(defectArray);
-            itemArray.push(featureArray);
-            itemArray.push(incidentArray);
-            itemArray.push(taskArray);
+            if (settings.item_types.defects !== undefined)
+                itemArray.push(defectArray);
+            else
+                itemArray.push("null");
+            if (settings.item_types.features !== undefined)
+                itemArray.push(featureArray);
+            else
+                itemArray.push("null");
+            if (settings.item_types.incidents !== undefined)
+                itemArray.push(incidentArray);
+            else
+                itemArray.push("null");
+
+            if (settings.item_types.tasks !== undefined)
+                itemArray.push(taskArray);
+            else
+                itemArray.push("null");
 
             return itemArray;
         },
@@ -212,7 +238,7 @@
                 var featureFilterArray = window.myOnTimeTeam.populateFilterArray(featureFilterResponse, 'Features');
                 var incidentFilterArray = window.myOnTimeTeam.populateFilterArray(incidentFilterResponse, 'Incidents');
                 var taskFilterArray = window.myOnTimeTeam.populateFilterArray(taskFilterResponse, 'Tasks');
-                var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray, taskFilterArray);
+                var itemFilters = window.myOnTimeTeam.populateItemFilterArray(defectFilterArray, featureFilterArray, incidentFilterArray, taskFilterArray, settingsResponse);
                 var projectArray = window.myOnTimeTeam.populateDesignArray(projectsResponse, 'Projects');
                 var releaseArray = window.myOnTimeTeam.populateDesignArray(releasesResponse, 'Releases');
 

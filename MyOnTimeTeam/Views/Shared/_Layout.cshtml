@@ -104,7 +104,7 @@
                         </li>
                     </ul>
 
-                    <a class="btn btn-primary btn-small logoutButton" >Logout</a>
+                    <a class="btn btn-primary btn-small logoutButton">Logout</a>
                 </div>
                 <script>
                     window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
@@ -151,7 +151,7 @@
                         viewModel.showInactive(newShow);
                     });
 
-              
+
 
                 </script>
 
@@ -189,44 +189,52 @@
                 <div class="row-fluid filterBar">
                     <div class="span7 selectBars">
                         <div class="row-fluid">
-
+                            <!-- ko if: itemFilters()[0] != "null" -->
                             <div class="span3 selectBars">
 
                                 <label class="filterLabel">
-                                    <span data-bind= "text:itemTypes()[0]">&nbsp;</span>
+                                    <span data-bind="text: itemTypes()[0]">&nbsp;</span>
                                 </label>
                                 <!-- populates defect filter-->
                                 <div class="filterSelect defectlist">
                                     <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
                                 </div>
                             </div>
-
+                            <!-- /ko -->
+                            <!-- ko if: itemFilters()[1] != "null" -->
                             <div class="span3 selectBars">
                                 <label class="filterLabel">
-                                    <span data-bind= "text: itemTypes()[1]">&nbsp;</span>
+                                    <span data-bind="text: itemTypes()[1]">&nbsp;</span>
                                 </label>
                                 <!-- populates features filter-->
-                                <div class="filterSelect featurelist"><select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
-                           </div>
-                                     </div>
+                                <div class="filterSelect featurelist">
+                                    <select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: itemFilters()[2] != "null" -->
                             <div class="span3 selectBars">
                                 <label class="filterLabel">
-                                    <span data-bind= "text: itemTypes()[2]">&nbsp;</span>
+                                    <span data-bind="text: itemTypes()[2]">&nbsp;</span>
                                 </label>
                                 <!-- populates incidents filter -->
-                                <div class="filterSelect incidentlist"><select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
-                           </div>
-                                     </div>
+                                <div class="filterSelect incidentlist">
+                                    <select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: itemFilters()[3] != "null" -->
                             <div class="span3 selectBars">
 
                                 <label class="filterLabel">
-                                    <span data-bind= "text: itemTypes()[3]">&nbsp;</span>
+                                    <span data-bind="text: itemTypes()[3]">&nbsp;</span>
                                 </label>
                                 <!-- populates defect filter-->
                                 <div class="filterSelect tasklist">
                                     <select data-bind="options: itemFilters()[3], optionsText: 'name', optionsValue: 'id', value: taskId "></select>
                                 </div>
                             </div>
+                            <!-- /ko -->
 
                         </div>
                     </div>
@@ -234,12 +242,16 @@
                         <div class="row-fluid">
                             <div class="span6 selectBars">
                                 <label class="filterLabel">Projects</label>
-                               <div class="filterSelect projectlist"> <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
-                            </div></div>
+                                <div class="filterSelect projectlist">
+                                    <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
+                                </div>
+                            </div>
                             <div class="span6 selectBars">
                                 <label class="filterLabel">Releases</label>
-                                <div class="filterSelect releaselist"><select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
-                            </div></div>
+                                <div class="filterSelect releaselist">
+                                    <select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

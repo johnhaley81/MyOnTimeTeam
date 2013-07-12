@@ -17,22 +17,31 @@
                 </h4>
                 <div data-bind="visible: dataLoaded">
                     <div>
-                        <span data-bind="visible: defectsShow() !== '0'" class="label label-warning">Defects:
+                        <!-- ko if: viewModel.itemFilters()[0] != "null" -->
+                        <span data-bind="visible: defectsShow() !== '0'" class="label label-warning"><span data-bind="text: viewModel.itemTypes()[0]"></span>:
                             <!-- ko text: defectsShow -->
                             <!-- /ko -->
                         </span>
-                        <span data-bind="visible: featuresShow() !== '0'" class="label label-info">Features:
+                        <!-- /ko -->
+                        <!-- ko if: viewModel.itemFilters()[1] != "null" -->
+                        <span data-bind="visible: featuresShow() !== '0'" class="label label-info"><span data-bind="text: viewModel.itemTypes()[1]"></span>:
                             <!-- ko text: featuresShow -->
                             <!-- /ko -->
                         </span>
-                        <span data-bind="visible: incidentsShow() !== '0'" class="label label-important">Incidents:
+                        <!-- /ko -->
+                        <!-- ko if: viewModel.itemFilters()[2] != "null" -->
+                        <span data-bind="visible: incidentsShow() !== '0'" class="label label-important"><span data-bind="text: viewModel.itemTypes()[2]"></span>:
                             <!-- ko text: incidentsShow -->
                             <!-- /ko -->
                         </span>
-                        <span data-bind="visible: tasksShow() !== '0'" class="label label-success">Tasks:
+                        <!-- /ko -->
+                        <!-- ko if: viewModel.itemFilters()[3] != "null" -->
+                        <span data-bind="visible: tasksShow() !== '0'" class="label label-success"><span data-bind="text: viewModel.itemTypes()[3]"></span>:
                             <!-- ko text: tasksShow -->
                             <!-- /ko -->
                         </span>
+                        <!-- /ko -->
+
                     </div>
                     <div>
                         <span>Estimated work remaining:
