@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
+    <title>My OnTime Team</title>
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/bootstrap")
     @Scripts.Render("~/bundles/modernizr")
@@ -14,7 +14,11 @@
     @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/myOnTimeTeam")
+
     <script type="text/javascript">
+
+
+
         window.siteRoot = '@Utils.GetSiteRoot()';
         if (window.localStorage.getItem('sort') === null) {
             window.localStorage.setItem('sort', 'name');
@@ -35,7 +39,15 @@
             window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
             window.localStorage.setItem('apiCallCounter', 0);
         }
+
+        $(document).ready(function () {
+            if (navigator.userAgent.indexOf("MSIE 10") > -1) {
+                $('body').addClass('ie10');
+            }
+        });
+
     </script>
+
 </head>
 <body>
 
@@ -290,6 +302,7 @@
             $('.logoutButton').click(function () {
                 document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
                 document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                window.myOnTimeTeam.apiCache = [];
 
                 document.location = "";
             });
