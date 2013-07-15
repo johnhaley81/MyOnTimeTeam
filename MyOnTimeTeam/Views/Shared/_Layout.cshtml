@@ -283,6 +283,7 @@
             $('.logoutButton').click(function () {
                 document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
                 document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                window.myOnTimeTeam.apiCache = [];
 
                 document.location = "";
             });

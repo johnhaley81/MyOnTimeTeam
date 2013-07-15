@@ -53,7 +53,7 @@ namespace MyOnTimeTeam.Controllers
             Response.Charset = response.CharacterSet;
             Response.StatusCode = (int)response.StatusCode;
             Response.StatusDescription = response.StatusDescription;
-
+            Response.Cache.SetNoStore();
             resultStream.CopyTo(Response.OutputStream);
 
             return null;
