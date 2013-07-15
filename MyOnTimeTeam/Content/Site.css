@@ -882,3 +882,7 @@ tr.pager td {
 #masterDropdown{
     text-align: left;
 }
+
+.ie10{
+    padding-right: 16px;
+}
