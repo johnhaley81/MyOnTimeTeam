@@ -75,26 +75,33 @@
                                         <li data-sortvalue="work"><a href="#">Work Remaining
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
-                                        <li data-sortvalue="defects"><a href="#">Defect Count
+                                        <!-- ko if: viewModel.itemFilters()[0] != "null" -->
+                                        <li data-sortvalue="defects"><a href="#"><span data-bind="text: viewModel.itemTypes()[0]"></span> Count
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
-
-                                        <li data-sortvalue="features"><a href="#">Feature Count
+                                        <!-- /ko -->
+                                        
+                                        <!-- ko if: viewModel.itemFilters()[1] != "null" -->
+                                        <li data-sortvalue="features"><a href="#"><span data-bind="text: viewModel.itemTypes()[1]"></span> Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
+                                        <!-- /ko -->
 
-                                        <li data-sortvalue="incidents"><a href="#">Incident Count
+                                        <!-- ko if: viewModel.itemFilters()[2] != "null" -->
+                                        <li data-sortvalue="incidents"><a href="#"><span data-bind="text: viewModel.itemTypes()[2]"></span> Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
+                                        <!-- /ko -->
 
-                                        <li data-sortvalue="tasks"><a href="#">Task Count
+                                        <!-- ko if: viewModel.itemFilters()[3] != "null" -->
+                                        <li data-sortvalue="tasks"><a href="#"><span data-bind="text: viewModel.itemTypes()[3]"></span> Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
-
-                                        <li data-sortvalue="items"><a href="#">Item Count
+                                        <!-- /ko -->
+                                        <li data-sortvalue="items"><a href="#">Items Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
