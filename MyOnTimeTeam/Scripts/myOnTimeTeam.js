@@ -487,7 +487,7 @@
         },
 
         getProjects: function () {
-            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('projects', ''), {});
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('projects', '&include_inactive_projects=false'), {});
         },
 
         getFilters: function (itemType) {
@@ -496,7 +496,7 @@
         },
 
         getReleases: function () {
-            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', ''), {});
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', '&include_inactive_releases=false'), {});
         },
 
         getSettings: function () {
