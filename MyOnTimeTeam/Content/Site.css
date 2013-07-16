@@ -757,7 +757,9 @@ tr.pager td {
 
 /* responsive grid */
 .responsive-grid {
-    width: 100%;
+    
+    padding: 0px 10px 0px 10px;
+    
 }
 
     .responsive-grid:before,
@@ -885,4 +887,10 @@ tr.pager td {
 
 .ie10{
     padding-right: 16px;
+}
+
+#gridTmpl
+{
+    padding-left : 10px;
+    padding-right: 10px;
 }
