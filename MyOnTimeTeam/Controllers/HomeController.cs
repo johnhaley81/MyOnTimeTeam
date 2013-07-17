@@ -17,7 +17,7 @@ namespace MyOnTimeTeam.Controllers
             {
                 if (err.Equals("true"))
                 {
-                    ViewBag.message = "An error has occurred. Either you did not enable the API in your instance of OnTime, or you are out of API calls for the day.";
+                    ViewBag.message = "Either you did not turn on APIs in your OnTime instance, or you are out of API calls for the day.";
 
                 }
                 else

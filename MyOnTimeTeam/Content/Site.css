@@ -66,16 +66,7 @@ h5, h6 {
         text-decoration: none;
     }
 
-.welcome {
-    text-align: center;
-    background-color: #1b1b1b;
-    color: #999999;
-    padding: 1.23em 1em .8em 1em;
-    margin: 2em 20% 2em 20%;
-    border-radius: 1em;
-    font-size: 18px;
-    font-weight: 200;
-}
+
 
 /* main layout
 ----------------------------------------------------------*/
@@ -893,4 +884,21 @@ tr.pager td {
 {
     padding-left : 10px;
     padding-right: 10px;
+}
+
+/*Front page*/
+.welcome {
+    text-align: center;
+    background-color: #1b1b1b;
+    color: #999999;
+    padding: 1.23em 1em .8em 1em;
+    margin: 2em 20% 2em 20%;
+    border-radius: 1em;
+    font-size: 18px;
+    font-weight: 200;
+}
+
+.copy {
+  padding: 1.23em 1em .8em 1em;
+  margin: 2em 20% 2em 20%;
 }

@@ -48,6 +48,20 @@
 
     </script>
 
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-170982-27']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+
 </head>
 <body>
 
@@ -88,27 +102,27 @@
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- ko if: viewModel.itemFilters()[0] != "null" -->
-                                        <li data-sortvalue="defects"><a href="#"><span data-bind="text: viewModel.itemTypes()[0]"></span> Count
+                                        <li data-sortvalue="defects"><a href="#"><span data-bind="text: viewModel.itemTypes()[0]"></span>Count
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- /ko -->
-                                        
+
                                         <!-- ko if: viewModel.itemFilters()[1] != "null" -->
-                                        <li data-sortvalue="features"><a href="#"><span data-bind="text: viewModel.itemTypes()[1]"></span> Count
+                                        <li data-sortvalue="features"><a href="#"><span data-bind="text: viewModel.itemTypes()[1]"></span>Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- /ko -->
 
                                         <!-- ko if: viewModel.itemFilters()[2] != "null" -->
-                                        <li data-sortvalue="incidents"><a href="#"><span data-bind="text: viewModel.itemTypes()[2]"></span> Count
+                                        <li data-sortvalue="incidents"><a href="#"><span data-bind="text: viewModel.itemTypes()[2]"></span>Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- /ko -->
 
                                         <!-- ko if: viewModel.itemFilters()[3] != "null" -->
-                                        <li data-sortvalue="tasks"><a href="#"><span data-bind="text: viewModel.itemTypes()[3]"></span> Count
+                                        <li data-sortvalue="tasks"><a href="#"><span data-bind="text: viewModel.itemTypes()[3]"></span>Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
@@ -285,6 +299,19 @@
     @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
     {
+        <div class="copy">
+            <div class="row-fluid">
+                <div class="span6">
+                    <img src="Images/myontimeteam.png" alt="User workload dashboard">
+                </div>
+                <div class="span6">
+                    <h2>Stay informed about your team work.</h2>
+                    <p><strong>My OnTimeTeam</strong> is a flexible dashboard that allows you to easily see what your team's workload is at a glance. View by defects, user stories, incidents, tasks, projects, and/or releases. Utilize the filters that you've already set up in OnTime. See how many items each user is working on, as well as how much work remaining they have. And it's all powered by your OnTime database.</p>
+                </div>
+            </div>
+        </div>
+
+        
         <div class="welcome">
             <p>@ViewBag.message</p>
             <button class="btn btn-primary loginButton" type="button">Login</button>
