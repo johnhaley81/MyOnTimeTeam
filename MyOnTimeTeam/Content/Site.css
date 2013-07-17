@@ -892,7 +892,7 @@ tr.pager td {
     background-color: #1b1b1b;
     color: #999999;
     padding: 1.23em 1em .8em 1em;
-    margin: 2em 20% 2em 20%;
+    margin: 2em 10% 2em 10%;
     border-radius: 1em;
     font-size: 18px;
     font-weight: 200;
@@ -900,5 +900,6 @@ tr.pager td {
 
 .copy {
   padding: 1.23em 1em .8em 1em;
-  margin: 2em 20% 2em 20%;
+  margin: 2em 10% 2em 10%;
+  font-size: 16px;
 }
