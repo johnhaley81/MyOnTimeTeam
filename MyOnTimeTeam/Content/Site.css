@@ -901,5 +901,13 @@ tr.pager td {
 .copy {
   padding: 1.23em 1em .8em 1em;
   margin: 2em 10% 2em 10%;
-  font-size: 16px;
+}
+
+.copy p{
+    font-size: 16px;
+    line-height: 25px;
+}
+
+.copy h1{
+    margin: 20px 0;
 }
