@@ -5,34 +5,72 @@
 }
 
 <div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	<h3>Login</h3>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Login</h3>
 </div>
-@using (Html.BeginForm("LogOn","Accounts", FormMethod.Post, new {@class = "modal-form"}))
+@using (Html.BeginForm("OnTimeAuth", "Accounts", FormMethod.Post, new { @class = "modal-form" }))
 {
-	<div class="modal-body">
-		@Html.AntiForgeryToken()
-		@Html.ValidationSummary(true)
+    <div class="modal-body">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
 
-		<fieldset>
-			<legend>LogOnModel</legend>
+        <fieldset>
+            <legend>LogOnModel</legend>
 
-			<div class="editor-label">
-				@Html.LabelFor(model => model.OnTimeUrl)
-			</div>
-			<div class="editor-field">
-				@Html.EditorFor(model => model.OnTimeUrl)
-				@Html.ValidationMessageFor(model => model.OnTimeUrl)
-			</div>
-		</fieldset>
+            <div class="editor-label">
+                @Html.LabelFor(model => model.OnTimeUrl)
+            </div>
+            <div class="editor-field" onkeypress="return disableEnterKey(event)">
+               <div id="urlTextBox">@Html.EditorFor(model => model.OnTimeUrl)</div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="modal-footer">
+        <input class="btn" type="button" data-dismiss="modal" value="Close" />
+        <input class="btn btn-primary" id="modallogin" type="button" value="Login" />
+    </div>
+    
+    @Scripts.Render("~/bundles/jqueryval")
 
-		@section Scripts {
-			@Scripts.Render("~/bundles/jqueryval")
-		}
+    <script>
+        
+        var buildOnTimeUrl = function (url) {
+            if( url.indexOf("https://") === -1 && url.indexOf("http://") === -1)
+                url = "https://" + url;
+            
+            var origin = window.location.origin;
 
-	</div>
-	<div class="modal-footer">
-		<input class="btn" type="button" data-dismiss="modal" value="Close" />
-		<input class="btn btn-primary" type="submit" value="Login" />
-	</div>
+            if (origin === undefined)
+                origin = window.location.href;
+            else
+                origin = origin + '/';
+            
+
+
+            url = url + '/auth?response_type=code&client_id=d494ea05-1629-4d73-afd4-a6a0c9cfbd6a&redirect_uri=' + encodeURIComponent(origin + "accounts/receive_code") + '&state=' + encodeURIComponent(url);
+            
+
+            return url;
+        };
+
+        $('#modallogin').click(function () {
+      
+           
+            window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
+            
+        });
+
+        function disableEnterKey(e) {
+            var key;
+            if (window.event)
+                key = window.event.keyCode; //IE
+            else
+                key = e.which; //firefox
+
+            if (key === 13)
+                $('#modallogin').click();
+
+        }
+    </script>
+
 }

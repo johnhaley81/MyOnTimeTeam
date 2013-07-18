@@ -3,135 +3,357 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<title>@ViewBag.Title</title>
-		@Styles.Render("~/Content/css")
-		@Styles.Render("~/Content/bootstrap")
-		@Scripts.Render("~/bundles/modernizr")
-		@Scripts.Render("~/bundles/jquery")
-		@Scripts.Render("~/bundles/knockout")
-		@Scripts.Render("~/bundles/bootstrap")
-		@Scripts.Render("~/bundles/myOnTimeTeam")
-		<script type="text/javascript">
-			window.siteRoot = '@Utils.GetSiteRoot()';
-			if (window.localStorage.getItem('sort') === null) {
-				window.localStorage.setItem('sort', 'name');
-			}
-			if (window.localStorage.getItem('hiddenUsers') === null) {
-				window.localStorage.setItem('hiddenUsers', []);
-			}
-			if (window.localStorage.getItem('showHidden') === null) {
-				window.localStorage.setItem('showHidden', false);
-			}
-		</script>
-	</head>
-	<body>
-		<div class="container">
-			<div class="navbar navbar-inverse">
-				<div class="navbar-inner">
-					<a class="brand active" href="~/">My OnTime Team</a>
-					@if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
-						!string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)) {
-						<div class="btn-group pull-right">
-							<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
-								<img id="userImage" class="icon-" height="16" width="16"/>
-								<span id="userName"></span>
-							</a>
-							<ul class="dropdown-menu">
-								<li class="dropdown-submenu pull-left">
-									<a href="#">Sort by</a>
-									<ul class="dropdown-menu">
-										<li data-sortValue="name"><a href="#">
-											User Name
-											<span class="hide icon icon-ok"></span>
-										</a></li>
-										<li data-sortValue="work"><a href="#">
-											Work Remaining
-											<span class="hide icon icon-ok"></span>
-										</a></li>
-										<li data-sortValue="defects"><a href="#">
-											Defect Count
-											<span class="hide icon icon-ok"></span>
-										</a></li>
-										<li data-sortValue="features"><a href="#">
-											Feature Count
-											<span class="hide icon icon-ok"></span>
-										</a></li>
-										<li data-sortValue="incidents"><a href="#">
-											Incident Count
-											<span class="hide icon icon-ok"></span>
-										</a></li>
-										<li data-sortValue="items"><a href="#">
-											Item Count
-											<span class="hide icon icon-ok"></span>
-										</a></li>
-									</ul>
-								</li>
-								<li id="showHidden" ><a href="#">
-									Show Hidden Users
-									<span class="hide icon icon-ok"></span>
-								</a></li>
-								<li class="divider"></li>
-								<li>
-									<a href="#" id="logoutButton">Log Out</a>
-								</li>
-							</ul>
-						</div>
-						<script>
-							window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
-							window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
-							window.myOnTimeTeam.getCurrentUserData().done(function (response) {
-								var data = response.data;
-								$("#userImage").attr("src", data.user_image);
-								$("#userName").text(data.first_name + " " + data.last_name);
-							});
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>My OnTime Team</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/bootstrap")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/myOnTimeTeam")
 
-							var viewModel = window.myOnTimeTeam.refreshData();
+    <script type="text/javascript">
 
-							var sort = window.localStorage.getItem('sort') || 'name'; //name, work
-							$('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
-							$('[data-sortValue]').click(function () {
-								var newSort = $(this).attr('data-sortValue');
-								localStorage.setItem('sort', newSort);
-								viewModel.sortBy(newSort);
-								$('[data-sortValue] .icon-ok').addClass('hide');
-								$('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
-							});
-							$('#showHidden .icon-ok').toggleClass('hide',
-								localStorage.getItem("showHidden") !== "true"
-							);
-							$('#showHidden a').click(function () {
-								var newShow = localStorage.getItem("showHidden") !== "true";
-								$('#showHidden .icon-ok').toggleClass('hide', !newShow)
-								localStorage.setItem("showHidden", newShow);
-								viewModel.showHidden(newShow);
-							});
-						</script>
-					} else {
-						<a class="btn btn-primary btn-small pull-right" id="loginButton">Login</a>
-					}
-				</div>
-			</div>
-			@RenderBody()
 
-			@RenderSection("scripts", required: false)
-			<script>
-				if ($('#loginButton')) {
-					$('#loginButton').click(function () {
-						$.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
-					});
-				}
-				if ($('#logoutButton')) {
-					$('#logoutButton').click(function () {
-						document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
-						document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
 
-						document.location = "";
-					});
-				}
-			</script>
-		</div>
-	</body>
+        window.siteRoot = '@Utils.GetSiteRoot()';
+        if (window.localStorage.getItem('sort') === null) {
+            window.localStorage.setItem('sort', 'name');
+        }
+        if (window.localStorage.getItem('hiddenUsers') === null) {
+            window.localStorage.setItem('hiddenUsers', []);
+        }
+        if (window.localStorage.getItem('showHidden') === null) {
+            window.localStorage.setItem('showHidden', false);
+        }
+
+        if (window.localStorage.getItem('showInactive') === null) {
+            window.localStorage.setItem('showInactive', false);
+        }
+
+        if (window.localStorage.getItem('apiCallCounter') == null) {
+            var date = new Date();
+            window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
+            window.localStorage.setItem('apiCallCounter', 0);
+        }
+
+        $(document).ready(function () {
+            if (navigator.userAgent.indexOf("MSIE 10") > -1) {
+                $('body').addClass('ie10');
+            }
+        });
+
+    </script>
+
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-170982-27']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+
+</head>
+<body>
+
+    <div class="navbar navbar-inverse">
+        <div class="navbar-inner borderOverride">
+            <a class="brand active" href="~/">My OnTime Team</a>
+            @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
+            {
+
+                <div class="topBar">
+                    <span style="margin-top: .25em"></span>
+                    <span class="userObject">
+                        <img id="userImage" class="icon-" height="16" width="16" />
+                        <span id="userName"></span></span>
+                    <ul class="nav">
+                        <li><a href="#" id="aboutButton">About</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings<i class="icon-caret-down icon-white"></i></a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel" id="masterDropdown">
+                                <li id="showHidden"><a href="#">Show Hidden Users
+                                   
+                                    <span class="hide icon icon-ok"></span>
+                                </a></li>
+                                <li id="showInactive"><a href="#">Show Inactive Users
+                                   
+                                    <span class="hide icon icon-ok"></span>
+                                </a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-submenu">
+                                    <a href="#">Sort by</a>
+                                    <ul class="dropdown-menu">
+                                        <li data-sortvalue="name"><a href="#">User Name
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <li data-sortvalue="work"><a href="#">Work Remaining
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <!-- ko if: viewModel.itemFilters()[0] != "null" -->
+                                        <li data-sortvalue="defects"><a href="#"><span data-bind="text: viewModel.itemTypes()[0]"></span>Count
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: viewModel.itemFilters()[1] != "null" -->
+                                        <li data-sortvalue="features"><a href="#"><span data-bind="text: viewModel.itemTypes()[1]"></span>Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: viewModel.itemFilters()[2] != "null" -->
+                                        <li data-sortvalue="incidents"><a href="#"><span data-bind="text: viewModel.itemTypes()[2]"></span>Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <!-- /ko -->
+
+                                        <!-- ko if: viewModel.itemFilters()[3] != "null" -->
+                                        <li data-sortvalue="tasks"><a href="#"><span data-bind="text: viewModel.itemTypes()[3]"></span>Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                        <!-- /ko -->
+                                        <li data-sortvalue="items"><a href="#">Items Count
+                                           
+                                            <span class="hide icon icon-ok"></span>
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <a class="btn btn-primary btn-small logoutButton">Logout</a>
+                </div>
+                <script>
+                    window.oauthToken = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value";
+                    window.ontimeUrl = "@HttpContext.Current.Request.Cookies[Constants.ONTIME_URL].Value";
+                    window.myOnTimeTeam.getCurrentUserData().done(function (response) {
+                        var data = response.data;
+                        $("#userImage").attr("src", data.user_image);
+                        $("#userName").text(data.first_name + " " + data.last_name);
+                    });
+
+                    var viewModel = window.myOnTimeTeam.refreshData();
+
+                    $('#aboutButton').click(function () {
+                        $.modalPopup('@Utils.GetSiteRoot()/home/about');
+                    });
+
+                    var sort = window.localStorage.getItem('sort') || 'name'; //name, work
+                    $('[data-sortValue=' + sort + '] .icon-ok').removeClass('hide');
+                    $('[data-sortValue]').click(function () {
+                        var newSort = $(this).attr('data-sortValue');
+                        localStorage.setItem('sort', newSort);
+                        viewModel.sortBy(newSort);
+                        $('[data-sortValue] .icon-ok').addClass('hide');
+                        $('[data-sortValue=' + newSort + '] .icon-ok').removeClass('hide');
+                    });
+
+                    $('#showHidden .icon-ok').toggleClass('hide',
+                          localStorage.getItem("showHidden") !== "true"
+                      );
+                    $('#showHidden a').click(function () {
+                        var newShow = localStorage.getItem("showHidden") !== "true";
+                        $('#showHidden .icon-ok').toggleClass('hide', !newShow)
+                        localStorage.setItem("showHidden", newShow);
+                        viewModel.showHidden(newShow);
+                        window.myOnTimeTeam.getUsersData(viewModel);
+                    });
+
+                    $('#showInactive .icon-ok').toggleClass('hide',
+                       localStorage.getItem("showInactive") !== "true"
+                   );
+                    $('#showInactive a').click(function () {
+                        var newShow = localStorage.getItem("showInactive") !== "true";
+                        $('#showInactive .icon-ok').toggleClass('hide', !newShow);
+                        viewModel.showInactive(newShow);
+                    });
+
+
+
+                </script>
+
+                <div class="modal hide fade" id="apiModal">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3>API Alert</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p data-bind="text: apiAlertMessage"></p>
+                    </div>
+                </div>
+                
+                <div class="modal hide fade" id="errorModal">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3>Error</h3>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <p>There was an error processing your request. Your API call limit may have been reached for the day.</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a class="btn btn-primary btn-small pull-right loginButton">Login</a>
+            }
+        </div>
+
+        @if (HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value))
+        {
+            <div class="navbar" id="containerBar">
+
+                <div class="row-fluid filterBar">
+                    <div class="span7 selectBars">
+                        <div class="row-fluid">
+                            <!-- ko if: itemFilters()[0] != "null" -->
+                            <div class="span3 selectBars">
+
+                                <label class="filterLabel">
+                                    <span data-bind="text: itemTypes()[0]">&nbsp;</span>
+                                </label>
+                                <!-- populates defect filter-->
+                                <div class="filterSelect defectlist">
+                                    <select data-bind="options: itemFilters()[0], optionsText: 'name', optionsValue: 'id', value: defectId "></select>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: itemFilters()[1] != "null" -->
+                            <div class="span3 selectBars">
+                                <label class="filterLabel">
+                                    <span data-bind="text: itemTypes()[1]">&nbsp;</span>
+                                </label>
+                                <!-- populates features filter-->
+                                <div class="filterSelect featurelist">
+                                    <select data-bind="options: itemFilters()[1], optionsText: 'name', optionsValue: 'id', value: featureId "></select>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: itemFilters()[2] != "null" -->
+                            <div class="span3 selectBars">
+                                <label class="filterLabel">
+                                    <span data-bind="text: itemTypes()[2]">&nbsp;</span>
+                                </label>
+                                <!-- populates incidents filter -->
+                                <div class="filterSelect incidentlist">
+                                    <select data-bind="options: itemFilters()[2], optionsText: 'name', optionsValue: 'id', value: incidentId "></select>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+                            <!-- ko if: itemFilters()[3] != "null" -->
+                            <div class="span3 selectBars">
+
+                                <label class="filterLabel">
+                                    <span data-bind="text: itemTypes()[3]">&nbsp;</span>
+                                </label>
+                                <!-- populates defect filter-->
+                                <div class="filterSelect tasklist">
+                                    <select data-bind="options: itemFilters()[3], optionsText: 'name', optionsValue: 'id', value: taskId "></select>
+                                </div>
+                            </div>
+                            <!-- /ko -->
+
+                        </div>
+                    </div>
+                    <div class="span5 selectBars">
+                        <div class="row-fluid">
+                            <div class="span6 selectBars">
+                                <label class="filterLabel">Projects</label>
+                                <div class="filterSelect projectlist">
+                                    <select data-bind="options: projects, optionsText: 'name', optionsValue: 'id', value: projectId "></select>
+                                </div>
+                            </div>
+                            <div class="span6 selectBars">
+                                <label class="filterLabel">Releases</label>
+                                <div class="filterSelect releaselist">
+                                    <select data-bind="options: releases, optionsText: 'name', optionsValue: 'id', value: releaseId "></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+              
+        }
+    </div>
+
+    @RenderBody()
+    @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
+                        !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
+    {
+        <div class="copy">
+            <div class="row-fluid">
+                <div class="span6">
+                    <img src="Images/myontimeteam.png" alt="User workload dashboard">
+                </div>
+                <div class="span6">
+                    <h1>Stay informed about your team work.</h1>
+                    <p><strong>My OnTimeTeam</strong> is a flexible dashboard that allows you to easily see what your team's workload is at a glance. View by defects, user stories, incidents, tasks, projects, and/or releases. Utilize the filters that you've already set up in OnTime. See how many items each user is working on, as well as how much work remaining they have. And it's all powered by your OnTime database.</p>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="welcome">
+            <p>@ViewBag.message</p>
+            <button class="btn btn-primary btn-large loginButton" type="button"><strong>Login</strong></button>
+        </div>
+    }
+
+    @RenderSection("scripts", required: false)
+    <script>
+        if ($('.loginButton')) {
+            $('.loginButton').click(function () {
+                $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
+            });
+        }
+        if ($('.logoutButton')) {
+            $('.logoutButton').click(function () {
+                document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+                window.myOnTimeTeam.apiCache = [];
+
+                document.location = "";
+            });
+
+        }
+
+        $('#iconChangeToggle').click(function () {
+            if ($('#chevronUp').hasClass('hide')) {
+                $('#chevronDown').addClass('hide');
+                $('#chevronUp').removeClass('hide');
+            }
+            else {
+                $('#chevronUp').addClass('hide');
+                $('#chevronDown').removeClass('hide');
+            }
+        });
+
+        $('#errorModal').on('hidden', function () {
+            document.cookie = encodeURIComponent("@Constants.ONTIME_OAUTH_TOKEN") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+            document.cookie = encodeURIComponent("@Constants.ONTIME_URL") + "=deleted; expires=" + new Date(0).toUTCString() + ";";
+
+            document.location = "";
+        });
+
+    </script>
+</body>
 </html>
