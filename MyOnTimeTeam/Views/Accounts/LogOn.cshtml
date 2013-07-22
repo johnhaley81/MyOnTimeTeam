@@ -55,7 +55,7 @@
 
         $('#modallogin').click(function () {
       
-           
+            window.localStorage.setItem('userUrl', $('.modal-form #OnTimeUrl').val());
             window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
             
         });

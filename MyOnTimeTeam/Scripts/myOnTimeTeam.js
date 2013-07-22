@@ -3,7 +3,11 @@
         this.id = serverUser.id;
         this.firstName = serverUser.first_name;
         this.lastName = serverUser.last_name;
-        this.userImage = serverUser.user_image;
+
+        if (serverUser.use_gravatar === false)
+            this.userImage = 'https://' + window.localStorage.getItem('userUrl') + '/' + serverUser.user_image.substring(serverUser.user_image.indexOf('api/v2'));
+        else
+            this.userImage = serverUser.user_image;
 
         var hiddenUsers = localStorage.getItem('hiddenUsers').split(',');
         var isHidden = $.inArray(this.id.toString(), hiddenUsers) !== -1;
