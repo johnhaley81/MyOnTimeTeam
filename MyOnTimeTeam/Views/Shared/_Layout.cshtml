@@ -34,6 +34,10 @@
             window.localStorage.setItem('showInactive', false);
         }
 
+        if (window.localStorage.getItem('filterReleases') === null) {
+            window.localStorage.setItem('filterReleases', true);
+        }
+
         if (window.localStorage.getItem('apiCallCounter') == null) {
             var date = new Date();
             window.localStorage.setItem('apiDate', date.getDate() + '/' + date.getMonth() + '/' + date.getYear());
@@ -90,6 +94,8 @@
                                    
                                     <span class="hide icon icon-ok"></span>
                                 </a></li>
+                                <li id="filterReleases"><a href="#">Filter Releases By Project
+                                    <span class="hide icon icon-ok"></span></a></li>
                                 <li class="divider"></li>
                                 <li class="dropdown-submenu">
                                     <a href="#">Sort by</a>
@@ -183,6 +189,17 @@
                         $('#showInactive .icon-ok').toggleClass('hide', !newShow);
                         viewModel.showInactive(newShow);
                     });
+
+                    $('#filterReleases .icon-ok').toggleClass('hide',
+                     localStorage.getItem("filterReleases") !== "true"
+                 );
+                    $('#filterReleases a').click(function () {
+                        var newShow = localStorage.getItem("filterReleases") !== "true";
+                        $('#filterReleases .icon-ok').toggleClass('hide', !newShow);
+                        viewModel.filterReleasesBool(newShow);
+                    });
+
+
 
 
 
@@ -307,7 +324,7 @@
                 <div class="span6">
                     <h1>Stay informed about your team work.</h1>
                     <p><strong>My OnTimeTeam</strong> is a flexible dashboard that allows you to easily see what your team's workload is at a glance. View by defects, user stories, incidents, tasks, projects, and/or releases. Utilize the filters that you've already set up in OnTime. See how many items each user is working on, as well as how much work remaining they have. And it's all powered by your OnTime database.</p>
-                      <p>We've created this product at Axosoft as a sample of what can be done with the OnTime APIs. For questions and source code visit <a href="https://github.com/Axosoft/MyOnTimeTeam">https://github.com/Axosoft/MyOnTimeTeam</a>.</p>
+                    <p>We've created this product at Axosoft as a sample of what can be done with the OnTime APIs. For questions and source code visit <a href="https://github.com/Axosoft/MyOnTimeTeam">https://github.com/Axosoft/MyOnTimeTeam</a>.</p>
                 </div>
             </div>
         </div>
@@ -323,7 +340,7 @@
     <script>
         if ($('.loginButton')) {
             $('.loginButton').click(function () {
-                $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
+                $.modalPopup('@Utils.GetSiteRoot()accounts/logon');
             });
         }
         if ($('.logoutButton')) {

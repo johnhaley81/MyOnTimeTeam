@@ -73,15 +73,15 @@
             return Math.round(this.workRemainingMinutes() / 60) + " Hours";
         }, this);
 
-       
+
     };
 
-   	//null means no users are currently being processed.
+    //null means no users are currently being processed.
     //an array, empty or otherwise, means other users are
     //already being processed.
 
     window.myOnTimeTeam = {
-        apiCache : {},
+        apiCache: {},
 
         initializeViewModel: function (viewModel) {
             viewModel.defectId = ko.observable(window.localStorage.getItem('defectfilter') || "0");
@@ -97,7 +97,7 @@
 
         populateItemNames: function (settings) {
             var name = [];
-            if(settings.item_types.defects !== undefined)
+            if (settings.item_types.defects !== undefined)
                 name.push(settings.item_types.defects.p_label);
             else
                 name.push("null");
@@ -121,45 +121,51 @@
             return name;
         },
 
-        populateFilterArray: function (itemResponse,name) {
+        populateFilterArray: function (itemResponse, name) {
             if (name === undefined)
                 return;
 
             itemArray = [];
 
-            
+
             var none = {
                 name: "All " + name.p_label,
                 id: 0
             };
 
+            var noitem = {
+                name: "No " + name.p_label,
+                id: -2
+            };
+
             var separator = {
                 name: "----------------",
-            id: -1
-        };
+                id: -1
+            };
 
             //create the nofilter option and a separator
-    itemArray.push(none);
-    itemArray.push(separator);
+            itemArray.push(none);
+            itemArray.push(noitem);
+            itemArray.push(separator);
 
             //add all the private filters
-    for (var i = 0 ; i < itemResponse.data.length ; i++) {
-        if (itemResponse.data[i].private) {
-            itemArray.push(itemResponse.data[i]);
-        }
-    }
+            for (var i = 0 ; i < itemResponse.data.length ; i++) {
+                if (itemResponse.data[i].private) {
+                    itemArray.push(itemResponse.data[i]);
+                }
+            }
 
             //if any private filters exist, add another separator
-    if (itemArray.length > 2) {
-        itemArray.push(separator);
-    }
+            if (itemArray.length > 3) {
+                itemArray.push(separator);
+            }
 
             //push any public filters onto the list
-    for (var j = 0 ; j < itemResponse.data.length ; j++) {
-        if (!itemResponse.data[j].private) {
-            itemArray.push(itemResponse.data[j]);
-        }
-    }
+            for (var j = 0 ; j < itemResponse.data.length ; j++) {
+                if (!itemResponse.data[j].private) {
+                    itemArray.push(itemResponse.data[j]);
+                }
+            }
 
             return itemArray;
         },
@@ -196,6 +202,8 @@
                 id: 0
             };
             designArray.push(allDesign);
+
+
 
             for (var i = 0 ; i < designResponse.data.length ; i++) {
                 recursivepush(designResponse.data[i], designArray, 0);
@@ -253,8 +261,8 @@
                 viewModel.itemTypes = ko.mapping.fromJS(nameArray);
                 viewModel.itemFilters = ko.mapping.fromJS(itemFilters);
                 viewModel.projects = ko.mapping.fromJS(projectArray);
-                viewModel.releases = ko.mapping.fromJS(releaseArray);
 
+                viewModel.releases = ko.observableArray(releaseArray);
                 viewModel.sortBy = ko.observable(window.localStorage.getItem('sort') || "name");
                 viewModel.showHidden = ko.observable(localStorage.getItem('showHidden') === "true");
                 viewModel.showInactive = ko.observable(localStorage.getItem('showInactive') === "true");
@@ -264,6 +272,7 @@
                 viewModel.filterFeaturesBy = ko.observable(window.localStorage.getItem('featurefilter') || "nofilter");
                 viewModel.filterIncidentsBy = ko.observable(window.localStorage.getItem('incidentfilter') || "nofilter");
                 viewModel.filterTasksBy = ko.observable(window.localStorage.getItem('taskfilter') || "nofilter");
+                viewModel.filterReleasesBool = ko.observable(window.localStorage.getItem('filterReleases') === "true");
 
                 var userModels = window.myOnTimeTeam.populateUserModels(usersResponse, viewModel);
                 viewModel.users = ko.observableArray(userModels);
@@ -306,6 +315,11 @@
                     $('.projectlist :selected').removeAttr('select');
                     $(".projectlist [value='" + newFilter + "']").attr('select', 'select');
                     localStorage.setItem('filter', $('.projectlist :selected').val());
+                    localStorage.setItem("filterReleases", viewModel.filterReleasesBool());
+                    var filterparam = '';
+                    if (this.filterReleasesBool() === true)
+                        filterparam = '&filter_by_project_id=' + newFilter;
+                    $.when(myOnTimeTeam.getReleases(filterparam)).done(function (newReleaseReponse) { viewModel.releases(window.myOnTimeTeam.populateDesignArray(newReleaseReponse, 'Releases')) });
                 }, viewModel);
 
                 viewModel.updateRelease = ko.computed(function () {
@@ -326,7 +340,7 @@
                         $(".defectlist [value='" + newDefectFilter + "']").attr('select', 'select');
                         localStorage.setItem('defectfilter', $('.defectlist :selected').val());
                     }
-                    
+
                 }, viewModel);
                 viewModel.updateFeature = ko.computed(function () {
                     var newFeatureFilter = this.featureId();
@@ -393,13 +407,13 @@
                     if (hiddenUsersArray[j] === viewModel.users()[i].id.toString())
                         found = true;
                 }
-                    if (!found || viewModel.showHidden()) {
-                        this.getUserDataCalls(viewModel, i);
-                    }
+                if (!found || viewModel.showHidden()) {
+                    this.getUserDataCalls(viewModel, i);
                 }
-            },
-        
-     
+            }
+        },
+
+
         getUserDataCalls: function (viewModel, index) {
             $.when(myOnTimeTeam.getItemDetailsForUser('defects', viewModel.users()[index].id, viewModel)
                 , myOnTimeTeam.getItemDetailsForUser('features', viewModel.users()[index].id, viewModel)
@@ -422,15 +436,45 @@
                     }
                 };
 
+
                 // Update the data for this user in the viewModel knockout object
-                viewModel.users()[index].defectsCount(getCount(defects));
-                viewModel.users()[index].featuresCount(getCount(features));
-                viewModel.users()[index].incidentsCount(getCount(incidents));
-                viewModel.users()[index].tasksCount(getCount(tasks));
-                viewModel.users()[index].workRemainingMinutes(Math.round(getWorkRemainingMinutes(defects)
-                    + getWorkRemainingMinutes(features)
-                    + getWorkRemainingMinutes(incidents)
-                    + getWorkRemainingMinutes(tasks)));
+                var defectsRemainingMinutes = getWorkRemainingMinutes(defects);
+                var featuresRemainingMinutes = getWorkRemainingMinutes(features);
+                var incidentsRemainingMinutes = getWorkRemainingMinutes(incidents);
+                var tasksRemainingMinutes = getWorkRemainingMinutes(tasks);
+
+                var workRemainingMinutes = Math.round(defectsRemainingMinutes
+                    + featuresRemainingMinutes
+                    + incidentsRemainingMinutes
+                    + tasksRemainingMinutes);
+
+                viewModel.users()[index].workRemainingMinutes(workRemainingMinutes);
+
+                if (viewModel.filterDefectsBy() === -2) {
+                    viewModel.users()[index].defectsCount(0);
+                    viewModel.users()[index].workRemainingMinutes(workRemainingMinutes - defectsRemainingMinutes);
+                }
+                else
+                    viewModel.users()[index].defectsCount(getCount(defects));
+                if (viewModel.filterFeaturesBy() === -2) {
+                    viewModel.users()[index].featuresCount(0);
+                    viewModel.users()[index].workRemainingMinutes(workRemainingMinutes - featuresRemainingMinutes);
+                }
+                else
+                    viewModel.users()[index].featuresCount(getCount(features));
+                if (viewModel.filterIncidentsBy() === -2) {
+                    viewModel.users()[index].incidentsCount(0);
+                    viewModel.users()[index].workRemainingMinutes(workRemainingMinutes - incidentsRemainingMinutes);
+                }
+                else
+                    viewModel.users()[index].incidentsCount(getCount(incidents));
+                if (viewModel.filterTasksBy() === -2) {
+                    viewModel.users()[index].tasksCount(0);
+                    viewModel.users()[index].workRemainingMinutes(workRemainingMinutes - tasksRemainingMinutes);
+                }
+                else
+                    viewModel.users()[index].tasksCount(getCount(tasks));
+
                 viewModel.users()[index].dataLoaded(true);
             })
             .fail(function () {
@@ -463,31 +507,39 @@
                     if (!(viewModel.filterReleasesBy().toString() === '0')) //if the ID isnt 0 for "All Releases"
                         target = target + '&release_id=' + viewModel.filterReleasesBy();
 
-            if (itemType === 'defects')
+            if (itemType === 'defects') {
+
                 if (!(viewModel.filterDefectsBy() === 'nofilter'))//if the ID isn't nofilter
                     if (!(typeof viewModel.filterDefectsBy() === 'undefined'))//if the ID isn't undefined
                         if (!(viewModel.filterDefectsBy().toString() === '0'))
                             target = target + '&filter_id=' + viewModel.filterDefectsBy();
-            if (itemType === 'features')
+            }
+            if (itemType === 'features') {
+
                 if (!(viewModel.filterFeaturesBy() === 'nofilter'))//if the ID isn't nofilter
                     if (!(typeof viewModel.filterFeaturesBy() === 'undefined'))//if the ID isn't undefined
                         if (!(viewModel.filterFeaturesBy().toString() === '0'))
                             target = target + '&filter_id=' + viewModel.filterFeaturesBy();
-            if (itemType === 'incidents')
+            }
+            if (itemType === 'incidents') {
+
                 if (!(viewModel.filterIncidentsBy() === 'nofilter'))//if the ID isn't nofilter
                     if (!(typeof viewModel.filterIncidentsBy() === 'undefined'))//if the ID isn't undefined
                         if (!(viewModel.filterIncidentsBy().toString() === '0'))
                             target = target + '&filter_id=' + viewModel.filterIncidentsBy();
-            if (itemType === 'tasks')
+            }
+            if (itemType === 'tasks') {
+           
                 if (!(viewModel.filterTasksBy() === 'nofilter'))//if the ID isn't nofilter
                     if (!(typeof viewModel.filterTasksBy() === 'undefined'))//if the ID isn't undefined
                         if (!(viewModel.filterTasksBy().toString() === '0'))
                             target = target + '&filter_id=' + viewModel.filterTasksBy();
+            }
             return window.myOnTimeTeam.makeApiCall(target);
         },
 
         getApiUrl: function (route, queryString) {
-            return window.siteRoot + '/ontime/proxy?resource=' + route + (queryString || "");
+            return window.siteRoot + 'ontime/proxy?resource=' + route + (queryString || "");
         },
 
         getProjects: function () {
@@ -499,8 +551,8 @@
             return window.myOnTimeTeam.makeApiCall(this.getApiUrl('filters', querystring), {});
         },
 
-        getReleases: function () {
-            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', '&include_inactive_releases=false'), {});
+        getReleases: function (filterid) {
+            return window.myOnTimeTeam.makeApiCall(this.getApiUrl('releases', '&include_inactive_releases=false' + filterid), {});
         },
 
         getSettings: function () {
@@ -516,8 +568,7 @@
 
             else {
                 var add = true;
-                for (var i = 0 ; i < window.myOnTimeTeam.apiQueue.length; i++)
-                {
+                for (var i = 0 ; i < window.myOnTimeTeam.apiQueue.length; i++) {
                     if (url === window.myOnTimeTeam.apiQueue[i].url)
                         add = false;
                 }
@@ -546,8 +597,7 @@
             $.ajax(request.url, {}).done(function (response) {
                 if (apidate === date.getDate() + '/' + date.getMonth() + '/' + date.getYear()) {
                     window.localStorage.setItem('apiCallCounter', (parseInt(apiCall, 10) + 1));
-                    if (apiCall === '500')
-                    {
+                    if (apiCall === '500') {
                         viewModel.apiAlertMessage("My OnTime Team has used approximately 500 API calls today. OnTime allows a maximum of 1000 calls per day.");
                         $('#apiModal').modal({ show: true });
                     }
@@ -562,12 +612,12 @@
                 }
                 myOnTimeTeam.apiCache[request.url] = response;
                 request.deferredResponse.resolve(response);
-            }).fail( function (response) {
+            }).fail(function (response) {
                 $('#errorModal').modal({ show: true });
-                
+
             });
 
-            
+
         },
 
         apiQueue: []
@@ -579,8 +629,7 @@
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
-        for (var i = 0 ; i < indentLevel ; i++)
-        {
+        for (var i = 0 ; i < indentLevel ; i++) {
             root.name = "\xA0\xA0" + root.name;
         }
         projarray.push(root);
