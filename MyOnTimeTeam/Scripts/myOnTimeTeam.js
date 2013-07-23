@@ -629,9 +629,18 @@
 
     var recursivepush = function (root, projarray, indentLevel) {
         root.value = root.id;
-        for (var i = 0 ; i < indentLevel ; i++) {
-            root.name = "\xA0\xA0" + root.name;
+        var emptyspacecount = 0;
+        var correctIndentLevel = "";
+        for (var i = 0 ; i < indentLevel; i++)
+            correctIndentLevel = correctIndentLevel + "\xA0\xA0";
+
+        if (root.name.toString().indexOf(correctIndentLevel) === -1) {
+            for (var i = 0 ; i < indentLevel ; i++) {
+                root.name = "\xA0\xA0" + root.name;
+            }
         }
+     
+
         projarray.push(root);
         if (root.hasOwnProperty('children')) {
             if (root.children != null) {
