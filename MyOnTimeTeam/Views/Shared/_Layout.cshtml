@@ -316,6 +316,9 @@
     @if (!(HttpContext.Current.Request.Cookies.AllKeys.Contains(Constants.ONTIME_OAUTH_TOKEN) &&
                         !string.IsNullOrEmpty(HttpContext.Current.Request.Cookies[Constants.ONTIME_OAUTH_TOKEN].Value)))
     {
+        
+        if (ViewBag.showMarketing == null || ViewBag.showMarketing)
+        { 
         <div class="copy">
             <div class="row-fluid">
                 <div class="span6">
@@ -328,7 +331,7 @@
                 </div>
             </div>
         </div>
-
+        }
         
         <div class="welcome">
             <p>@ViewBag.message</p>

@@ -2,6 +2,9 @@
     ViewBag.Title = "LoginFailed";
 }
 
-<script>
-    parent.window.location = "@MyOnTimeTeam.Infrastructure.Utils.GetSiteRoot()" + "?err=true";
-</script>
+
+    <script type="text/javascript">
+        window.opener.location = "@MyOnTimeTeam.Infrastructure.Utils.GetSiteRoot()" + "?err=true";
+    window.close();
+    </script>
+   

@@ -18,16 +18,19 @@ namespace MyOnTimeTeam.Controllers
                 if (err.Equals("true"))
                 {
                     ViewBag.message = "Either you did not turn on APIs in your OnTime instance, or you are out of API calls for the day.";
+                    ViewBag.showMarketing = false;
 
                 }
                 else
                 {
                     ViewBag.message = "Please log in to your OnTime instance and allow My OnTime Team to access it.";
+                    ViewBag.showMarketing = true;
                 }
             }
             catch (Exception)
             {
                 ViewBag.message = "Please log in to your OnTime instance and allow My OnTime Team to access it.";
+                ViewBag.showMarketing = true;
             }
 
             return View();
