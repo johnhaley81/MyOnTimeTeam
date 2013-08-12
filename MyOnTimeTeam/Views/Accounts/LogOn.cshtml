@@ -8,22 +8,15 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>Login</h3>
 </div>
-@using (Html.BeginForm("OnTimeAuth", "Accounts", FormMethod.Post, new { @class = "modal-form" }))
-{
+
     <div class="modal-body">
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true)
-
-        <fieldset>
-            <legend>LogOnModel</legend>
-
             <div class="editor-label">
-                @Html.LabelFor(model => model.OnTimeUrl)
             </div>
-            <div class="editor-field" onkeypress="return disableEnterKey(event)">
-               <div id="urlTextBox">@Html.EditorFor(model => model.OnTimeUrl)</div>
+            <div class="editor-field">
+                <label for="urlTextBox">OnTime URL</label>
+                <input type="text" id="urlTextBox" />
             </div>
-        </fieldset>
+        
     </div>
     <div class="modal-footer">
         <input class="btn" type="button" data-dismiss="modal" value="Close" />
@@ -45,19 +38,14 @@
             else
                 origin = origin + '/';
             
-
-
             url = url + '/auth?response_type=code&client_id=d494ea05-1629-4d73-afd4-a6a0c9cfbd6a&redirect_uri=' + encodeURIComponent(origin + "accounts/receive_code") + '&state=' + encodeURIComponent(url);
-            
 
             return url;
         };
 
         $('#modallogin').click(function () {
-      
-            window.localStorage.setItem('userUrl', $('.modal-form #OnTimeUrl').val());
-            window.open(buildOnTimeUrl($('.modal-form #OnTimeUrl').val()), 'pagetitle', 'width=800,height=600');
-            
+            window.localStorage.setItem('userUrl', $('#urlTextBox').val());
+            window.open(buildOnTimeUrl($('#urlTextBox').val()), 'pagetitle', 'width=800,height=600');
         });
 
         function disableEnterKey(e) {
@@ -69,8 +57,11 @@
 
             if (key === 13)
                 $('#modallogin').click();
-
         }
+
+        $('#urlTextBox').keydown(function (event) {
+            if (event.keyCode === 13)
+                $('#modallogin').click();
+        });
     </script>
 
-}
