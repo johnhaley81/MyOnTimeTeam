@@ -108,27 +108,27 @@
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- ko if: viewModel.itemFilters()[0] != "null" -->
-                                        <li data-sortvalue="defects"><a href="#"><span data-bind="text: viewModel.itemTypes()[0]"></span>Count
+                                        <li data-sortvalue="defects"><a href="#"><span data-bind="text: viewModel.itemTypes()[0]"></span> Count
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- /ko -->
 
                                         <!-- ko if: viewModel.itemFilters()[1] != "null" -->
-                                        <li data-sortvalue="features"><a href="#"><span data-bind="text: viewModel.itemTypes()[1]"></span>Count
+                                        <li data-sortvalue="features"><a href="#"><span data-bind="text: viewModel.itemTypes()[1]"></span> Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- /ko -->
 
                                         <!-- ko if: viewModel.itemFilters()[2] != "null" -->
-                                        <li data-sortvalue="incidents"><a href="#"><span data-bind="text: viewModel.itemTypes()[2]"></span>Count
+                                        <li data-sortvalue="incidents"><a href="#"><span data-bind="text: viewModel.itemTypes()[2]"></span> Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
                                         <!-- /ko -->
 
                                         <!-- ko if: viewModel.itemFilters()[3] != "null" -->
-                                        <li data-sortvalue="tasks"><a href="#"><span data-bind="text: viewModel.itemTypes()[3]"></span>Count
+                                        <li data-sortvalue="tasks"><a href="#"><span data-bind="text: viewModel.itemTypes()[3]"></span> Count
                                            
                                             <span class="hide icon icon-ok"></span>
                                         </a></li>
@@ -343,7 +343,7 @@
     <script>
         if ($('.loginButton')) {
             $('.loginButton').click(function () {
-                $.modalPopup('@Utils.GetSiteRoot()accounts/logon');
+                $.modalPopup('@Utils.GetSiteRoot()/accounts/logon');
             });
         }
         if ($('.logoutButton')) {

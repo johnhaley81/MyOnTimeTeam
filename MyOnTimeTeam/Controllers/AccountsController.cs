@@ -76,18 +76,22 @@ namespace MyOnTimeTeam.Controllers
                     dynamic json = JsonConvert.DeserializeObject<dynamic>(rawJson);
 
                     string accessToken = json["access_token"];
-                    //dynamic data = json["data"];
-                    //string firstName = data["firstName"];
-                    //string lastName = data["lastName"];
-                    //string email = data["email"];
-                    //int id = data["id"];
+                    dynamic data = json["data"];
+                    string firstName = data["first_name"];
+                    string lastName = data["last_name"];
+                    string email = data["email"];
 
                     HttpContext.Response.AppendCookie(new HttpCookie(Constants.ONTIME_OAUTH_TOKEN, accessToken));
                     HttpContext.Response.AppendCookie(new HttpCookie(Constants.ONTIME_URL, state));
+
+                    //login was successful, let's add a record of it to the database
+                    DatabaseHelper.LogLogin(firstName + " " + lastName, email, state, DateTime.Now.ToString());
+
+
                     return Redirect("/accounts/tokenRedirect");
                 }
             }
-            catch (WebException e)
+            catch (WebException)
             {
                 return Redirect("LoginFailed");
             }

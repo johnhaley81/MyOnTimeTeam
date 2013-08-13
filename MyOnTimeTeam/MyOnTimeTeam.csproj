@@ -154,6 +154,7 @@
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\OnTimeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DatabaseHelper.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -231,6 +232,10 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="DatabaseStuff\ConstructLoginTable.sql" />
+    <Content Include="DatabaseStuff\LogLogin.sql">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <None Include="Properties\PublishProfiles\myontimeteam.pubxml" />
@@ -308,6 +313,7 @@
     <Content Include="Scripts\jquery.validate.min.js.map">
       <DependentUpon>jquery.validate.js</DependentUpon>
     </Content>
+    <Content Include="user.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
