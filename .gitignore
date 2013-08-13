@@ -4,3 +4,4 @@ bin
 obj
 *.orig
 user.config
+Keys.cs
